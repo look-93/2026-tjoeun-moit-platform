@@ -111,10 +111,6 @@ jobs:
                   echo "NAVER_USER=${{ secrets.NAVER_USER }}" >> moit-v3/back/.env
                   echo "NAVER_PASSWORD=${{ secrets.NAVER_PASSWORD }}" >> moit-v3/back/.env
 
-                  echo "FRONTEND_URL=https://moit-web-v3.duckdns.org" >> moit-v3/back/.env
-                  echo "OAUTH2_REDIRECT_URL=https://moit-web-v3.duckdns.org/oauth2/callback" >> moit-v3/back/.env
-                  echo "KAKAO_LOGOUT_REDIRECT_URL=https://moit-web-v3.duckdns.org/user/member/kakaologout" >> moit-v3/back/.env
-
             # EC2 MOIT v3 디렉터리 생성
             - name: Ensure MOIT v3 backend directory exists
               uses: appleboy/ssh-action@v0.1.7
@@ -227,7 +223,7 @@ jobs:
             # Frontend Build
             - name: Build Frontend
               run: |
-                  npm install
+                  npm install --legacy-peer-deps
                   npm run build -- --no-lint
               working-directory: moit-v3/front
 
@@ -289,7 +285,7 @@ jobs:
                   script: |
                       cd /home/ubuntu/app/moit-v3/front
 
-                      npm install --production
+                      npm install --production --legacy-peer-deps
 
                       pm2 delete moit-v3-frontend || true
 
