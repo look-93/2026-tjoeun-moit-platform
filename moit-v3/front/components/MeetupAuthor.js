@@ -32,7 +32,7 @@ function MeetupAuthor({ meetup, meetupId }) {
                   (meetup.completedMeetupCount / meetup.hostMeetupCount) * 100,
               )
             : 0;
-    console.log(meetup);
+
     return (
         <Card title="작성자" className="meetup-side-card">
             {/* 기본 프로필 */}

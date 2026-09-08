@@ -93,7 +93,7 @@ function write() {
                     uid: `existing-${index}`,
                     name: imagePath,
                     status: "done",
-                    url: `${API_BASE_URL}/uploads/meetup/${imagePath}`,
+                    url: `${API_BASE_URL}/upload/meetup/${imagePath}`,
                 }),
             );
 

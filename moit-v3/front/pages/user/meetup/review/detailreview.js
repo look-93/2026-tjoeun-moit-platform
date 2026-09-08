@@ -56,10 +56,10 @@ const getImageUrl = (imgItem) => {
     if (url) {
         if (url.startsWith("http")) return url;
         const cleanPath = url.startsWith("/") ? url : `/${url}`;
-        if (cleanPath.startsWith("/uploads/")) {
+        if (cleanPath.startsWith("/upload/")) {
             return `${BACKEND_URL}${cleanPath}`;
         }
-        return `${BACKEND_URL}/uploads/review${cleanPath}`;
+        return `${BACKEND_URL}/upload/review${cleanPath}`;
     }
 
     //경로가 없고 아이디만 있는 경우

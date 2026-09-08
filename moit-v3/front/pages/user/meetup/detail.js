@@ -236,9 +236,9 @@ function MeetupDetailPage() {
     const images =
         meetup?.imagePaths?.length > 0
             ? meetup.imagePaths.map(
-                  (imagePath) => `${API_BASE_URL}/uploads/meetup/${imagePath}`,
+                  (imagePath) => `${API_BASE_URL}/upload/meetup/${imagePath}`,
               )
-            : [`${API_BASE_URL}/uploads/no-image.png`];
+            : [`${API_BASE_URL}/upload/no-image.png`];
 
     const rawReviews =
         reduxReviews?.map((review) => ({

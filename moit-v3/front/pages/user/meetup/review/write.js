@@ -120,7 +120,7 @@ function ReviewWritePage() {
                     const rawUrl = img.imageUrl || "";
                     const fullImageUrl = rawUrl.startsWith("http")
                         ? rawUrl
-                        : `${API_BASE_URL}/uploads/review/${rawUrl}`;
+                        : `${API_BASE_URL}/upload/review/${rawUrl}`;
 
                     return {
                         uid: `-${idx}`,

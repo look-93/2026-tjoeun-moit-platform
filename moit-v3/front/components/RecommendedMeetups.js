@@ -24,8 +24,8 @@ function RecommendedMeetups({ recommendedMeetups = [], onMeetupClick }) {
                                     <img
                                         src={
                                             item.imagePath
-                                                ? `${API_BASE_URL}/uploads/meetup/${item.imagePath}`
-                                                : `${API_BASE_URL}/uploads/no-image.png`
+                                                ? `${API_BASE_URL}/upload/meetup/${item.imagePath}`
+                                                : `${API_BASE_URL}/upload/no-image.png`
                                         }
                                         alt={item.title}
                                     />
