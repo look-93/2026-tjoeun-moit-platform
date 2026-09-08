@@ -271,10 +271,19 @@ jobs:
                   script: |
                       cd /home/ubuntu/app/moit-v3/front
 
-                      rm -rf .next public
+                      echo "=== Before extract ==="
+                      ls -lah
 
+                      test -f frontend-build.tar.gz || {
+                        echo "❌ frontend-build.tar.gz not found"
+                        exit 1
+                      }
+
+                      rm -rf .next public
                       tar -xzf frontend-build.tar.gz
 
+                      echo "=== After extract ==="
+                      ls -lah
             # Frontend 실행
             - name: Run MOIT v3 Frontend
               uses: appleboy/ssh-action@v0.1.7
