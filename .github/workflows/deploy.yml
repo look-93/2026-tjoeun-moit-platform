@@ -1,0 +1,296 @@
+name: Deploy MOIT v3
+
+on:
+    push:
+        branches:
+            - main
+        paths:
+            - "moit-v3/**"
+            - ".github/workflows/deploy.yml"
+
+jobs:
+    # ============================================================
+    # Backend
+    # ============================================================
+    backend:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v3
+
+            # Gradle Wrapper 권한 설정
+            - name: Check gradle wrapper
+              run: |
+                  chmod +x moit-v3/back/gradlew
+                  ls -la moit-v3/back/gradle/wrapper/
+
+            # Java 17
+            - name: Set up JDK 17
+              uses: actions/setup-java@v3
+              with:
+                  java-version: "17"
+                  distribution: "temurin"
+
+            # Gradle 실행 권한
+            - name: Grant execute permission for gradlew
+              run: chmod +x ./gradlew
+              working-directory: moit-v3/back
+
+            # Spring Boot Build
+            - name: Build Spring Boot App
+              run: ./gradlew clean build -x test
+              working-directory: moit-v3/back
+
+            # 빌드 결과 확인
+            - name: Debug Backend Files
+              run: |
+                  echo "=== moit-v3/back 디렉터리 ==="
+                  ls -al moit-v3/back
+                  echo "=== build/libs 디렉터리 ==="
+                  ls -al moit-v3/back/build/libs
+
+            # 실행 가능한 Fat JAR 찾기
+            - name: Find JAR file
+              run: |
+                  echo "JAR_FILE=$(ls moit-v3/back/build/libs/*SNAPSHOT.jar | grep -v plain | head -n 1)" >> $GITHUB_ENV
+
+            - name: Debug JAR_FILE
+              run: echo "선택된 JAR_FILE=${{ env.JAR_FILE }}"
+
+            # JAR 존재 여부 확인
+            - name: Ensure JAR exists
+              run: |
+                  if [ ! -f "${{ env.JAR_FILE }}" ]; then
+                    echo "❌ JAR file not found: ${{ env.JAR_FILE }}"
+                    ls -al moit-v3/back/build/libs
+                    exit 1
+                  fi
+
+                  echo "✅ JAR file found: ${{ env.JAR_FILE }}"
+
+            # ========================================================
+            # Backend 환경변수 생성
+            # ========================================================
+            - name: Create Backend .env from Secrets
+              run: |
+                  echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> moit-v3/back/.env
+                  echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> moit-v3/back/.env
+
+                  echo "MAIL_USERNAME=${{ secrets.MAIL_USERNAME }}" >> moit-v3/back/.env
+                  echo "MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }}" >> moit-v3/back/.env
+
+                  echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> moit-v3/back/.env
+
+                  echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" >> moit-v3/back/.env
+                  echo "GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}" >> moit-v3/back/.env
+
+                  echo "KAKAO_CLIENT_ID=${{ secrets.KAKAO_CLIENT_ID }}" >> moit-v3/back/.env
+
+                  echo "NAVER_CLIENT_ID=${{ secrets.NAVER_CLIENT_ID }}" >> moit-v3/back/.env
+                  echo "NAVER_CLIENT_SECRET=${{ secrets.NAVER_CLIENT_SECRET }}" >> moit-v3/back/.env
+
+                  echo "TOSS_SECRET_KEY=${{ secrets.TOSS_SECRET_KEY }}" >> moit-v3/back/.env
+
+                  echo "SOLAPI_API_KEY=${{ secrets.SOLAPI_API_KEY }}" >> moit-v3/back/.env
+                  echo "SOLAPI_API_SECRET=${{ secrets.SOLAPI_API_SECRET }}" >> moit-v3/back/.env
+                  echo "SOLAPI_SENDER=${{ secrets.SOLAPI_SENDER }}" >> moit-v3/back/.env
+
+                  echo "ADMIN_ID=${{ secrets.ADMIN_ID }}" >> moit-v3/back/.env
+                  echo "ADMIN_PASSWORD=${{ secrets.ADMIN_PASSWORD }}" >> moit-v3/back/.env
+                  echo "ADMIN_NICKNAME=${{ secrets.ADMIN_NICKNAME }}" >> moit-v3/back/.env
+                  echo "ADMIN_EMAIL=${{ secrets.ADMIN_EMAIL }}" >> moit-v3/back/.env
+                  echo "ADMIN_MOBILE=${{ secrets.ADMIN_MOBILE }}" >> moit-v3/back/.env
+
+                  echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> moit-v3/back/.env
+
+                  echo "KMA_API_KEY=${{ secrets.KMA_API_KEY }}" >> moit-v3/back/.env
+                  echo "VWORLD_API_KEY=${{ secrets.VWORLD_API_KEY }}" >> moit-v3/back/.env
+
+                  echo "NAVER_HOST=${{ secrets.NAVER_HOST }}" >> moit-v3/back/.env
+                  echo "NAVER_USER=${{ secrets.NAVER_USER }}" >> moit-v3/back/.env
+                  echo "NAVER_PASSWORD=${{ secrets.NAVER_PASSWORD }}" >> moit-v3/back/.env
+
+                  echo "FRONTEND_URL=https://moit-web-v3.duckdns.org" >> moit-v3/back/.env
+                  echo "OAUTH2_REDIRECT_URL=https://moit-web-v3.duckdns.org/oauth2/callback" >> moit-v3/back/.env
+                  echo "KAKAO_LOGOUT_REDIRECT_URL=https://moit-web-v3.duckdns.org/user/member/kakaologout" >> moit-v3/back/.env
+
+            # EC2 MOIT v3 디렉터리 생성
+            - name: Ensure MOIT v3 backend directory exists
+              uses: appleboy/ssh-action@v0.1.7
+              with:
+                  host: ${{ secrets.EC2_HOST }}
+                  username: ${{ secrets.EC2_USER }}
+                  key: ${{ secrets.EC2_SSH_KEY }}
+                  script: |
+                      mkdir -p /home/ubuntu/app/moit-v3/back/build/libs
+
+            # JAR EC2 전송
+            - name: Copy Backend JAR to EC2
+              uses: appleboy/scp-action@v0.1.7
+              with:
+                  host: ${{ secrets.EC2_HOST }}
+                  username: ${{ secrets.EC2_USER }}
+                  key: ${{ secrets.EC2_SSH_KEY }}
+                  source: "moit-v3/back/build/libs/*SNAPSHOT.jar"
+                  target: "/home/ubuntu/app/moit-v3/back/build/libs"
+
+            # Backend .env EC2 전송
+            - name: Copy Backend .env to EC2
+              uses: appleboy/scp-action@v0.1.7
+              with:
+                  host: ${{ secrets.EC2_HOST }}
+                  username: ${{ secrets.EC2_USER }}
+                  key: ${{ secrets.EC2_SSH_KEY }}
+                  source: "moit-v3/back/.env"
+                  target: "/home/ubuntu/app/moit-v3/back"
+
+            # EC2 파일 확인
+            - name: Debug EC2 Backend Files
+              uses: appleboy/ssh-action@v0.1.7
+              with:
+                  host: ${{ secrets.EC2_HOST }}
+                  username: ${{ secrets.EC2_USER }}
+                  key: ${{ secrets.EC2_SSH_KEY }}
+                  script: |
+                      echo "=== MOIT v3 Backend ==="
+                      ls -lh /home/ubuntu/app/moit-v3/back/build/libs
+                      ls -la /home/ubuntu/app/moit-v3/back/.env
+
+            # Oracle / Redis 확인
+            - name: Wait for Oracle & Redis readiness
+              uses: appleboy/ssh-action@v0.1.7
+              with:
+                  host: ${{ secrets.EC2_HOST }}
+                  username: ${{ secrets.EC2_USER }}
+                  key: ${{ secrets.EC2_SSH_KEY }}
+                  script: |
+                      echo "⏳ Waiting for Oracle DB (1521) and Redis (6379)..."
+
+                      for i in {1..30}; do
+                        if nc -z localhost 1521 && nc -z localhost 6379; then
+                          echo "✅ Oracle & Redis are ready"
+                          break
+                        fi
+
+                        echo "Not ready yet... retry in 10s ($i/30)"
+                        sleep 10
+                      done
+
+            # Backend 실행
+            - name: Run MOIT v3 Backend
+              uses: appleboy/ssh-action@v0.1.7
+              with:
+                  host: ${{ secrets.EC2_HOST }}
+                  username: ${{ secrets.EC2_USER }}
+                  key: ${{ secrets.EC2_SSH_KEY }}
+                  script: |
+                      cd /home/ubuntu/app/moit-v3/back/build/libs
+
+                      pm2 delete moit-v3-backend || true
+
+                      export $(cat /home/ubuntu/app/moit-v3/back/.env | xargs)
+
+                      pm2 start java \
+                        --name "moit-v3-backend" \
+                        -- \
+                        -Dspring.profiles.active=prod \
+                        -Dserver.port=8081 \
+                        -jar \
+                        $(ls *SNAPSHOT.jar | grep -v plain | head -n 1)
+
+    # ============================================================
+    # Frontend
+    # ============================================================
+    frontend:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v3
+
+            # Node.js 18
+            - name: Set up Node.js
+              uses: actions/setup-node@v3
+              with:
+                  node-version: "18"
+
+            # ========================================================
+            # Frontend 환경변수 생성
+            # ========================================================
+            - name: Create Frontend .env.production
+              run: |
+                  echo "NEXT_PUBLIC_API_BASE_URL=https://moit-web-v3.duckdns.org" > moit-v3/front/.env.production
+                  echo "NEXT_PUBLIC_NAVER_MAP_CLIENT_ID=${{ secrets.NEXT_PUBLIC_NAVER_MAP_CLIENT_ID }}" >> moit-v3/front/.env.production
+                  echo "NEXT_PUBLIC_TOSS_CLIENT_KEY=${{ secrets.NEXT_PUBLIC_TOSS_CLIENT_KEY }}" >> moit-v3/front/.env.production
+
+            # Frontend Build
+            - name: Build Frontend
+              run: |
+                  npm install
+                  npm run build -- --no-lint
+              working-directory: moit-v3/front
+
+            # 빌드 결과 확인
+            - name: Debug Frontend Files
+              run: |
+                  echo "=== MOIT v3 Frontend ==="
+                  ls -al moit-v3/front
+                  ls -al moit-v3/front/.next || true
+                  ls -al moit-v3/front/public || true
+
+            # EC2 Frontend 디렉터리 생성
+            - name: Ensure MOIT v3 frontend directory exists
+              uses: appleboy/ssh-action@v0.1.7
+              with:
+                  host: ${{ secrets.EC2_HOST }}
+                  username: ${{ secrets.EC2_USER }}
+                  key: ${{ secrets.EC2_SSH_KEY }}
+                  script: |
+                      mkdir -p /home/ubuntu/app/moit-v3/front
+
+            # Frontend 빌드 압축
+            - name: Archive frontend build
+              run: |
+                  cd moit-v3/front
+                  tar -czf ../frontend-build.tar.gz .next public package.json .env.production
+
+            # Frontend 압축파일 EC2 전송
+            - name: Copy frontend archive to EC2
+              uses: appleboy/scp-action@v0.1.7
+              with:
+                  host: ${{ secrets.EC2_HOST }}
+                  username: ${{ secrets.EC2_USER }}
+                  key: ${{ secrets.EC2_SSH_KEY }}
+                  source: "moit-v3/frontend-build.tar.gz"
+                  target: "/home/ubuntu/app/moit-v3/front"
+
+            # 압축 해제
+            - name: Extract frontend build
+              uses: appleboy/ssh-action@v0.1.7
+              with:
+                  host: ${{ secrets.EC2_HOST }}
+                  username: ${{ secrets.EC2_USER }}
+                  key: ${{ secrets.EC2_SSH_KEY }}
+                  script: |
+                      cd /home/ubuntu/app/moit-v3/front
+
+                      rm -rf .next public
+
+                      tar -xzf frontend-build.tar.gz
+
+            # Frontend 실행
+            - name: Run MOIT v3 Frontend
+              uses: appleboy/ssh-action@v0.1.7
+              with:
+                  host: ${{ secrets.EC2_HOST }}
+                  username: ${{ secrets.EC2_USER }}
+                  key: ${{ secrets.EC2_SSH_KEY }}
+                  script: |
+                      cd /home/ubuntu/app/moit-v3/front
+
+                      npm install --production
+
+                      pm2 delete moit-v3-frontend || true
+
+                      PORT=3001 pm2 start npm --name "moit-v3-frontend" -- run start

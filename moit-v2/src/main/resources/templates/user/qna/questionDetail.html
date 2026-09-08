@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{user/layouts/layout}">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" th:href="@{/css/qnaStyle.css}">
+
+</head>
+<body>
+<div layout:fragment="content">
+
+<div class="inquiry-wrap-detail">
+
+    <h1 class="page-title-detail" th:text="${data.category == 'MEETUP'} ? '모임 1:1 문의 상세보기' : '관리자 1:1 문의 상세보기'"> </h1>
+    <div class="breadcrumb-detail"> <span th:text="${data.category == 'MEETUP'} ? '모임 1:1 문의' : '관리자 1:1 문의'"></span> &gt; 문의 상세보기 </div>
+
+    <div class="top-btn-area-detail">
+        <button class="btn-detail btn-answer-detail"	th:if="${canAnswer}"
+        		th:onclick="|location.href='@{/questions/answer/write/{id}(id=${data.questionId})}'|">답변등록</button>
+        <button class="btn-detail btn-edit-detail"
+   				th:onclick="|location.href='@{/questions/edit/{id}(id=${data.questionId})}'|"> 수정 </button>
+		<button class="btn-detail btn-delete-detail"
+        		th:onclick="|deleteQuestion(${data.questionId})|"> 삭제 </button>
+    </div>
+
+    <div class="card-detail">
+        <div class="card-title-detail">문의 정보</div>
+        <table class="info-table-detail">
+            <tr>
+                <th>제목</th>
+                <td th:text="${data.title}"></td>
+            </tr>
+            <tr>
+                <th>작성자</th>
+                <td th:text="${data.memberId}"></td>
+            </tr>
+            <tr>
+                <th>등록일</th>
+                <td th:text="${#dates.format(data.createdAt,'yyyy.MM.dd HH:mm:ss')}"></td>
+            </tr>
+            <tr>
+                <th>답변상태</th>
+                <td>
+                	<th:block th:if="${data.status == 'ANSWERED'}">
+	                   	<span class="status-done-detail">답변 완료</span>
+	                </th:block>
+	                <th:block th:unless="${data.status == 'ANSWERED'}">
+	                    <span class="status-wait-detail">답변 대기</span>
+	                </th:block>
+                </td>
+            </tr>
+            <tr>
+                <th>공개여부</th>
+                <td>
+				    <th:block th:if="${data.isPublic == 'N'}">
+				        비공개 상태입니다. 🔒
+				    </th:block>
+				    <th:block th:unless="${data.isPublic == 'N'}">
+				        공개 상태입니다. 🔓
+				    </th:block>
+				</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="card-detail">
+        <div class="card-title-detail">문의 내용</div>
+        <div class="content-box-detail"
+        	 th:text="${data.content}">
+        </div>
+    </div>
+    
+	<div th:if="${data.answer != null}">
+	    <div class="card-detail">
+	        <div class="answer-header-detail">
+	        <div class="card-title-detail">답변 내용</div>
+	        
+	            <div class="answer-btns-detail">
+	                <button class="btn-detail btn-answer-edit-detail" th:if="${canAnswer}"
+						th:onclick="|location.href='@{/questions/answer/edit/{id}(id=${data.questionId})}'|"> 답변수정 </button>
+	                <button class="btn-detail btn-answer-delete-detail" th:if="${canAnswer}"
+						th:onclick="|deleteAnswer(${data.answer.answerId}, ${data.questionId})|"> 답변삭제 </button>
+	            </div>
+	        </div>
+	        <div class="answer-content-detail" th:text="${data.answer.content}"></div>
+	        <div class="answer-date-detail">답변일 <span th:text="${data.answer != null ? #dates.format(data.answer.createdAt,'yyyy.MM.dd HH:mm:ss') : '-'}"></span></div>
+	    </div>
+	    <div class="list-btn-area-detail"
+	    	 th:onclick="|location.href='@{/questions}'|">
+	        <button class="btn-detail btn-list-detail">목록으로</button>
+	    </div>
+	</div>
+</div>
+
+
+<script>
+	function deleteQuestion(questionId){
+	    if(confirm("정말 삭제하시겠습니까?")){
+	        location.href = "/questions/delete/" + questionId;
+	    }
+	}
+
+	function deleteAnswer(answerId, questionId){
+	    if(confirm("답변을 삭제하시겠습니까?")){
+	        location.href = "/questions/answer/delete/" + answerId + "/" + questionId;
+	    }
+	}
+</script>
+<script th:inline="javascript">
+    const msg = [[${msg}]];
+
+    if(msg){
+        alert(msg);
+    }
+</script>
+
+</div>
+</body>
+</html>

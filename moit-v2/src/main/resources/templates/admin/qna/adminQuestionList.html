@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin/layouts/adminLayout}">
+<head>
+<meta charset="UTF-8">
+<meta name="_csrf" th:content="${_csrf.token}">
+<meta name="_csrf_header" th:content="${_csrf.headerName}">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<link rel="stylesheet" th:href="@{/css/qnaStyle.css}">
+
+</head>
+<body>
+<div layout:fragment="content">
+
+	<div class="page-header-admin">
+	    <div>
+	        <h1>관리자 1:1 문의</h1>
+	        <p>사용자가 등록한 문의를 조회하고 답변합니다.</p>
+	    </div>
+	</div>
+	
+	<div class="summary-wrap-admin">
+	    <div class="summary-card-admin">
+		    <div class="summary-top-admin">
+		        <div>
+		            <h4>전체 문의</h4>
+		            <strong th:text="${allCnt}">0</strong>
+		        </div>
+		        <i class="bi bi-chat-left-text"></i>
+		    </div>
+		</div>
+	    <div class="summary-card-admin">
+		    <div class="summary-top-admin">
+		        <div>
+		            <h4>답변 대기</h4>
+		            <strong th:text="${pendingCnt}">0</strong>
+		        </div>
+		        <i class="bi bi-clock-history"></i>
+		    </div>
+		</div>
+	    <div class="summary-card-admin">
+		    <div class="summary-top-admin">
+		        <div>
+		            <h4>답변 완료</h4>
+		            <strong th:text="${answeredCnt}">0</strong>
+		        </div>
+		        <i class="bi bi-check-circle"></i>
+		    </div>
+		</div>
+	    <div class="summary-card-admin">
+		    <div class="summary-top-admin">
+		        <div>
+		            <h4>오늘 등록</h4>
+		            <strong th:text="${todayCnt}">0</strong>
+		        </div>
+		
+		        <i class="bi bi-calendar3"></i>
+		    </div>
+		</div>
+	</div>
+	
+	<div class="list-section-admin">
+	
+		<form class="search-box-admin" th:action="@{/questions/admin}" method="get">
+		
+		<select name="type">
+			<option value="title" th:selected="${type=='title'}">제목</option>
+			<option value="content" th:selected="${type=='content'}">내용</option>
+		</select>
+		
+		<input type="text" name="keyword" th:value="${keyword}" placeholder="검색어를 입력하세요">
+		
+		<select name="status">
+			<option value="">전체 문의</option>
+			<option value="PENDING" th:selected="${status=='PENDING'}">답변 대기</option>
+			<option value="ANSWERED" th:selected="${status=='ANSWERED'}">답변 완료</option>
+		</select>
+		
+		<input type="date" name="startDate" th:value="${startDate}">
+		~
+		<input type="date" name="endDate" th:value="${endDate}">
+		
+		<div class="search-btn-group-admin">
+		<button type="submit">검색</button>
+		<button type="button" class="reset-btn-admin" onclick="resetSearch()">
+		    초기화
+		</button>
+		</div>
+		</form>
+		
+		<div class="list-top-admin">
+		    <div class="search-result-admin">
+		        <span th:if="${type != null or keyword != null or status != null or startDate != null or endDate != null}">
+		            검색 결과 <strong th:text="${searchCnt}"></strong>건
+		        </span>
+		    </div>
+		    <div class="list-btn-group-admin">
+		    <button type="button" class="normal-btn-admin" onclick="changeToNormal()">
+	            ✔ 정상 처리
+	        </button>
+		    <button type="button" class="delete-btn-admin" onclick="deleteSelected()">
+		        <i class="bi bi-trash3"></i> 선택 삭제
+		    </button>
+		    </div>
+		</div>
+
+		
+		<table class="inquiry-table-admin">
+			<thead>
+				<tr>
+				<th><input type="checkbox" id="checkAll-admin"></th>
+				<th>번호</th>
+				<th>작성자</th>
+				<th>문의구분</th>
+				<th>제목</th>
+				<th>AI 필터</th>
+				<th>공개여부</th>
+				<th>답변상태</th>
+				<th>등록일</th>
+				<th>답변일</th>
+				</tr>
+			</thead>
+			
+			<tbody>
+			<tr th:if="${#lists.isEmpty(list)}">
+				<td colspan="8">등록된 문의가 없습니다.</td>
+			</tr>
+			
+			<tr th:each="q, stat :${list}"
+				th:onclick="|location.href='@{/questions/{id}(id=${q.questionId})}'|">
+				<td onclick="event.stopPropagation();">
+				<input type="checkbox" name="questionIds" th:value="${q.questionId}"></td>
+				<td th:text="${totalCnt - (page - 1) * 10 - stat.index}"></td>
+				<td th:text="${q.memberId}"></td>
+				<td th:text="${q.category=='MEETUP'?'모임 문의':'관리자 문의'}"></td>
+				<td th:text="${q.title}"></td>
+				<td>
+				    <span class="ai-badge-admin" th:if="${q.analysisStatus=='PENDING_REVIEW'}">
+				        ⚠ 검토
+				    </span>
+				    <span class="ai-ok-admin" th:if="${q.analysisStatus=='NORMAL'}">
+				        정상
+				    </span>
+				</td>
+				<td>
+				    <span class="public-badge-admin" th:if="${q.isPublic == 'Y'}">🔓 공개</span>
+				    <span class="private-badge-admin" th:if="${q.isPublic == 'N'}">🔒 비공개</span>
+				</td>
+				
+				<td>
+					<span class="badge-admin waiting-admin" th:if="${q.status=='PENDING'}">답변 대기</span>
+					<span class="badge-admin complete-admin" th:if="${q.status=='ANSWERED'}">답변 완료</span>
+				</td>
+				
+		        <td th:text="${#dates.format(q.createdAt, 'yyyy.MM.dd HH:mm:ss')}"></td>
+		        <td th:text="${q.answer != null ? #dates.format(q.answer.createdAt,'yyyy.MM.dd HH:mm:ss') : '-'}"></td>	
+	         </tr>
+			
+			</tbody>
+		</table>
+	
+		<div class="paging-admin" th:if="${totalPage > 0}">
+			<a th:if="${startPage>1}"
+				th:href="@{/questions/admin( page=${startPage-1}, type=${type}, keyword=${keyword}, 
+							status=${status}, startDate=${startDate}, endDate=${endDate})}">
+				이전
+			</a>
+			
+			<a th:each="i:${#numbers.sequence(startPage,endPage)}"
+				th:text="${i}"
+				th:classappend="${page==i?' active-admin':''}"
+				th:href="@{/questions/admin( page=${i}, type=${type}, keyword=${keyword},
+						 	status=${status}, startDate=${startDate}, endDate=${endDate})}">
+			</a>
+			
+			<a th:if="${endPage<totalPage}"
+				th:href="@{/questions/admin( page=${endPage+1}, type=${type}, keyword=${keyword},
+				 			status=${status}, startDate=${startDate}, endDate=${endDate})}">
+				다음
+			</a>
+		</div>
+	
+	</div>
+<script>
+	document.getElementById("checkAll-admin").addEventListener("change", function () {
+	    const checked = this.checked;
+	    document.querySelectorAll("input[name='questionIds']").forEach(cb => {
+	        cb.checked = checked;
+	    });
+	});
+	function resetSearch() {
+	    document.querySelector("select[name='type']").selectedIndex = 0;
+	    document.querySelector("input[name='keyword']").value = "";
+	    document.querySelector("select[name='status']").selectedIndex = 0;
+	    document.querySelector("input[name='startDate']").value = "";
+	    document.querySelector("input[name='endDate']").value = "";
+	}
+	// 개별 체크박스 클릭 시 전체 선택 상태 변경
+    document.querySelectorAll("input[name='questionIds']").forEach(cb => {
+        cb.addEventListener("change", function () {
+            const all = document.querySelectorAll("input[name='questionIds']");
+            const checked = document.querySelectorAll("input[name='questionIds']:checked");
+            document.getElementById("checkAll-admin").checked = all.length === checked.length;
+        });
+    });
+	function deleteSelected(){
+	    const ids=[];
+	    document.querySelectorAll("input[name='questionIds']:checked").forEach(cb=>{ ids.push(cb.value); });
+	    if(ids.length==0){ alert("삭제할 문의를 선택하세요."); return; }
+	    if(!confirm("선택한 문의를 삭제하시겠습니까?")){ return; }
+	    fetch("/questions/deleteSelected",{
+	        method:"POST",
+	        headers:{
+	            "Content-Type":"application/json"
+	        },
+	        body:JSON.stringify(ids)
+	    }).then(response => {
+	        if (response.ok) {
+	            alert("삭제가 완료되었습니다.");
+	            location.reload();
+	        } else {
+	            alert("삭제 실패");
+	        }
+	    });
+	}
+	function changeToNormal(){
+	    const ids = [];
+	    document.querySelectorAll("input[name='questionIds']:checked")
+	        .forEach(cb => ids.push(cb.value));
+	    if(ids.length == 0){
+	        alert("정상 처리할 문의를 선택하세요.");
+	        return;
+	    }
+	    if(!confirm("선택한 문의를 정상 처리하시겠습니까?")){
+	        return;
+	    }
+	    const token = document.querySelector("meta[name='_csrf']").content;
+	    const header = document.querySelector("meta[name='_csrf_header']").content;
+
+	    fetch("/questions/ai/normal",{
+	        method:"POST",
+	        headers:{
+	            "Content-Type":"application/json",
+	            [header]: token
+	        },
+	        body: JSON.stringify(ids)
+	    })
+	    .then(response => {
+	        if(response.ok){
+	            alert("정상 처리되었습니다.");
+	            location.reload();
+	        }else{
+	            alert("처리 실패");
+	        }
+	    });
+	}
+</script>
+</div>
+</body>
+</html>

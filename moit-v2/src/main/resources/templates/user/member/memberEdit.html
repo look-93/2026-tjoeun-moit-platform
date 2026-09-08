@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{user/mypage/layouts/mypageLayout}">
+<head>
+<meta charset="UTF-8">
+<title>내 정보 수정</title>
+</head>
+
+<body>
+
+	<div layout:fragment="content">
+	    <div class="mypage-main-content">	
+	        <div class="mypage-user-info">	
+	            <h2 class="member-edit-title">회원정보 수정</h2>	
+	            <form class="member-edit-form"
+	            	  th:action="@{/user/member/memberEdit}"
+	                  method="post"
+	                  enctype="multipart/form-data">
+	
+	                <!-- 프로필 + 회원등급 -->
+					<div class="profile-grade-wrap">
+					
+					    <!-- 프로필 -->
+					    <div class="profile-upload">					
+					        <div class="profile-preview">
+					
+					         <img id="profilePreview"
+					         	  th:if="${dto.profileUrl != null}" 
+					              th:src="@{${dto.profileUrl}}"
+			        			  alt="프로필">
+			
+			    <span id="profilePreviewText"
+			          th:if="${dto.profileUrl == null}"
+			          th:text="${#strings.substring(dto.nickname,0,1)}">
+			    </span>
+					
+					        </div>
+										
+					        <label class="btn btn-outline">
+					            프로필 변경					
+					            <input type="file"
+					            	   id="profileImage"
+					                   name="profileImage"
+					                   accept="image/*"
+					                   hidden>
+					        </label>					
+					    </div>
+										
+					    <!-- 회원등급 -->
+					    <div class="member-grade-box">
+					
+					        <div class="mypage-info-title">
+					            회원등급
+					        </div>
+										
+					        <div class="member-grade">					
+					            <span th:switch="${#authentication.principal.typeName}">					
+					                <span th:case="'ROLE_MEMBER'">
+					                    일반회원
+					                </span>					
+					                <span th:case="'ROLE_PARTNER'">
+					                    제휴업체
+					                </span>					
+					                <span th:case="'ROLE_ADMIN'">
+					                    관리자
+					                </span>					
+					                <span th:case="*"
+					                      th:text="${#authentication.principal.typeName}">
+					                </span>					
+					            </span>					
+					        </div>					
+					    </div>					
+					</div>
+		
+	                <div class="mypage-info-grid">	
+	                    <!-- 아이디 -->	
+	                    <div class="form-group">	
+	                        <div class="mypage-info-title">
+	                            아이디
+	                        </div>	
+	                        <input type="text"
+	                               th:value="${dto.loginId}"
+	                               readonly>	
+	                    </div>
+		
+	                    <!-- 닉네임 -->	
+	                    <div class="form-group">	
+	                        <div class="mypage-info-title">
+	                            닉네임
+	                        </div>	
+	                        <input type="text"
+	                               name="nickname"
+	                               th:value="${dto.nickname}">	
+	                    </div>
+	                    
+	                    <!-- 이메일 -->	
+	                    <div class="form-group">	
+	                        <div class="mypage-info-title">
+	                            이메일
+	                        </div>	
+	                        <input type="email"
+	                               name="email"
+	                               th:value="${dto.email}">	
+	                    </div>
+	                    
+	                    <!-- 전화번호 -->
+						<div class="form-group">
+						    <div class="mypage-info-title">
+						        전화번호
+						    </div>
+						
+						    <input type="tel"
+						           name="mobile"
+						           pattern="[0-9]{11}"
+								   maxlength="11"
+						           th:value="${dto.mobile}"
+						           placeholder="전화번호">
+						</div>
+						
+						<!-- 성별 -->
+						<div class="form-group">
+						    <div class="mypage-info-title">
+						        성별
+						    </div>
+						
+						    <div class="gender-select">
+						        <input type="radio"
+						               id="male"
+						               name="gender"
+						               value="M"
+						               th:checked="${dto.gender == 'M'}">
+						        <label for="male"
+						               class="gender-card">
+						            남성
+						        </label>
+						
+						        <input type="radio"
+						               id="female"
+						               name="gender"
+						               value="F"
+						               th:checked="${dto.gender == 'F'}">
+						        <label for="female"
+						               class="gender-card">
+						            여성
+						        </label>
+						
+						        <input type="radio"
+						               id="none"
+						               name="gender"
+						               value="N"
+						               th:checked="${dto.gender == 'N'}">
+						        <label for="none"
+						               class="gender-card">
+						
+						            비공개
+						        </label>
+						    </div>
+						</div>
+						
+						<!-- 생년월일 -->
+						<div class="form-group">
+						
+						    <div class="mypage-info-title">
+						        생년월일
+						    </div>
+						
+						
+						    <input type="date"
+						           name="birth"
+						           th:value="${dto.birth}">
+						
+						</div>
+						
+						<!-- 관심사 -->
+						<div class="form-group">						
+						    <div class="mypage-info-title">
+						        관심사
+						    </div>					
+						
+						    <div class="interest-list">						
+						        <label class="interest-item"
+								       th:each="interest : ${interestList}">								
+								    <input type="checkbox"
+								           name="interestIds"
+								           th:value="${interest.interestId}"
+								           th:checked="${dto.interestIds != null 
+								                        and dto.interestIds.contains(interest.interestId)}">
+																
+								    <span th:switch="${interest.interestId}">
+								
+								        <th:block th:case="1">🏃 운동</th:block>
+								        <th:block th:case="2">✈ 여행</th:block>
+								        <th:block th:case="3">🎮 게임</th:block>
+								        <th:block th:case="4">📚 독서</th:block>
+								        <th:block th:case="5">🍽 맛집</th:block>
+								        <th:block th:case="6">🎬 영화</th:block>
+								        <th:block th:case="7">🎵 음악</th:block>
+								        <th:block th:case="8">🍳 요리</th:block>
+								
+								        <th:block th:case="*"
+								                  th:text="${interest.interestName}">
+								        </th:block>
+								
+								    </span>								
+								</label>						
+						    </div>						
+						</div>
+	
+	                <div class="mypage-btn-group">	
+	                    <a th:href="@{/user/member/mypage}"
+	                       class="btn btn-secondary">	
+	                        취소	
+	                    </a>
+	
+	                    <button type="submit"
+	                            class="btn btn-primary">	
+	                        저장하기	
+	                    </button>	
+	                </div>
+	            </form>
+	        </div>
+	    </div>
+	    <script>	
+	    document.addEventListener("DOMContentLoaded", function () {
+
+	        const fileInput = document.getElementById("profileImage");
+	        const preview = document.getElementById("profilePreview");
+	        const text = document.getElementById("profilePreviewText");
+	        
+	        fileInput.addEventListener("change", function () {
+
+	            const file = this.files[0];
+
+	            if (!file) { return; }
+	            
+	            const reader = new FileReader();
+
+	            reader.onload = function (e) {
+	            	
+	                preview.src = e.target.result;
+	                
+	                if (text) { text.style.display = "none"; }
+	            };
+	            reader.readAsDataURL(file);
+	        });
+	    });
+		</script>
+	    
+	</div>
+	
+	
+	
+	<script th:inline="javascript">
+		const msg=[[${msg}]];
+		
+		if(msg!=null){
+		    alert(msg);
+		}		
+	</script>
+	
+</body>
+</html>

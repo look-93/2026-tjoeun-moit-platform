@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{user/layouts/layout}">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" th:href="@{/css/qnaStyle.css}">
+
+</head>
+<body>
+<div layout:fragment="content">
+
+<div class="answer-wrap-answerEdit">
+
+<h1 class="page-title-answerEdit" th:text="${data.category == 'MEETUP'} ? '모임글 답변 수정' : '관리자 답변 수정'"></h1>
+<div class="breadcrumb-answerEdit">
+	<span th:text="${data.category == 'MEETUP'} ? '모임글 1:1 문의 &gt; 답변 수정' : '관리자 1:1 문의 &gt; 답변 수정'"></span>
+	</div>
+<div class="page-desc-answerEdit">작성한 답변 내용을 수정 후 저장해 주세요.</div>
+
+<div class="form-card-answerEdit">
+
+    <div class="info-box-answerEdit">
+        <div class="info-title-answerEdit">문의 정보</div>
+
+        <div class="info-row-answerEdit">
+            <div class="info-label-answerEdit">제목</div>
+            <div class="info-value-answerEdit" th:text="${data.title}"></div>
+        </div>
+
+        <div class="info-row-answerEdit">
+            <div class="info-label-answerEdit">작성자</div>
+            <div class="info-value-answerEdit">
+                <span th:text="${data.memberId}"></span>
+                &nbsp; | &nbsp;
+                <span th:text="${data.createdAt}"></span>
+            </div>
+        </div>
+
+    </div>
+
+    <form th:action="@{/questions/answer/edit}" method="post">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+        <input type="hidden" name="answerId" th:value="${answer.answerId}">
+        <input type="hidden" name="questionId" th:value="${data.questionId}">
+
+        <label class="answer-label-answerEdit">
+            답변 내용 <span class="required-answerEdit">*</span>
+        </label>
+
+        <textarea class="answer-textarea-answerEdit"
+                  name="content"
+                  required
+                  th:text="${answer.content}"></textarea>
+
+        <div class="btn-area-answerEdit">
+            <button type="submit" class="btn-answerEdit btn-save-answerEdit"> 저장 </button>
+            <button type="button" class="btn-answerEdit btn-cancel-answerEdit" onclick="history.back()"> 취소 </button>
+        </div>
+
+    </form>
+
+</div>
+
+</div>
+
+</div>
+</body>
+</html>

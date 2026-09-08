@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+   xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+   layout:decorate="~{user/mypage/layouts/mypageLayout}">
+<!--    #1. layout 렌더링    -->
+<head lang="ko">
+<meta charset="UTF-8">
+</head>
+<body>
+	<div layout:fragment="content">
+		<!-- MAIN -->
+		<div class="mypage-main-content">
+
+			<div class="mypage-dashboard">
+
+				<div class="mypage-stat-card">
+					📝
+					<h3 th:text="${meetupStats.meetupCount}"></h3>
+					<p>작성한 모집글</p>
+				</div>
+
+				<div class="mypage-stat-card">
+					👥
+					<h3 th:text="${meetupStats.applicationCount}"></h3>
+					<p>신청 모임</p>
+				</div>
+
+				<div class="mypage-stat-card">
+					⭐
+					<h3 th:text="${meetupStats.reviewCount}"></h3>
+					<p>작성 후기</p>
+				</div>
+
+				<div class="mypage-stat-card">
+					❤️
+					<h3 th:text="${meetupStats.likeCount}"></h3>
+					<p>관심 모임</p>
+				</div>
+				
+			</div>
+
+			<div class="mypage-user-info">
+
+				<h2>사용자 정보</h2>
+
+				<div class="mypage-info-grid">
+
+					<div class="mypage-info-box">
+						<div class="mypage-info-title">닉네임</div>
+						<div th:text="${dto.nickname}"></div>
+					</div>
+
+					<div class="mypage-info-box">
+						<div class="mypage-info-title">이메일</div>
+						<div th:text="${dto.email}"></div>
+					</div>
+
+					<div class="mypage-info-box">
+					    <div class="mypage-info-title">
+					        가입일
+					    </div>
+					
+					    <div th:text="${dto.createdAt}">
+					    </div>
+					</div>
+
+					<div class="mypage-info-box">
+					    <div class="mypage-info-title">
+					        관심 카테고리
+					    </div>
+				
+				    	<div th:if="${interests != null and !interests.isEmpty()}">
+					        <span th:each="interest, stat : ${interests}">
+					            <span th:text="${interest}"></span>
+					            <span th:if="${!stat.last}">, </span>
+					        </span>
+					    </div>
+					
+					    <div th:if="${interests == null or interests.isEmpty()}">
+					        등록된 관심사가 없습니다.
+					    </div>					
+					</div>
+
+				</div>
+
+			</div>
+
+		</div>
+		
+		<script th:inline="javascript">
+		    const message = [[${msg}]];
+		
+		    if (message != null) {
+		        alert(message);
+		    }
+		</script>
+
+	</div>		
+	
+</body>
+</html>

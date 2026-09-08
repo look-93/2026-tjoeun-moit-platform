@@ -1,0 +1,56 @@
+package com.moit.report.llmrag;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.List;
+
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+
+import com.moit.reports.llmrag.RagChunk;
+import com.moit.reports.llmrag.RagService;
+
+@SpringBootTest
+class RagServiceTest {
+
+	@Autowired
+	private RagService ragService;
+
+	@Test
+	@DisplayName("RAG PDF 문서 조각 저장 확인")
+	void ragChunksLoadTest() {
+
+		// 서버 시작 시 RagInitializer가 PDF를 읽고
+		// RagService의 chunks에 저장한 문서 조각 전체 조회
+		List<RagChunk> chunks = ragService.getChunks();
+
+		// 운영기준 5개 + 과거사례 8개 = 총 13개
+		assertThat(chunks).hasSize(13);
+	}
+
+	@Test
+	@DisplayName("NOSHOW 신고와 비슷한 문서 Top 3 검색")
+	void searchSimilarChunksTest() {
+
+		// 임시 query
+		String question = "모임 당일 아무 연락 없이 참석하지 않았습니다.";
+
+		// 현재 신고 내용과 가장 비슷한 문서 조각 3개 검색
+		//List<RagChunk> result = ragService.searchSimilarChunks(question, 3);
+
+		//assertThat(result).hasSize(3);
+	}
+	
+	@Test
+	@DisplayName("실제 신고 RAG AI 분석 테스트")
+	void analyzeReportTest() {
+
+		// 실제 DB에 존재하는 신고 번호
+		Long reportId = 7L;
+		String result = ragService.analyzeReport(reportId);
+
+		assertThat(result).isNotBlank();
+	}
+}

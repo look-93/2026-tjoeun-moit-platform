@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{user/layouts/layout}">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" th:href="@{/css/qnaStyle.css}">
+
+</head>
+<body>
+<div layout:fragment="content">
+
+<div class="answer-wrap-answerWrite">
+    <h1 class="page-title-answerWrite" th:text="${data.category == 'MEETUP'} ? '모임글 1:1 문의 답변 등록' : '관리자 1:1 문의 답변 등록'"></h1>
+    <div class="breadcrumb-answerWrite">
+	    <span th:text="${data.category == 'MEETUP'} ? '모임글 1:1 문의' : '관리자 1:1 문의'"></span>
+	    <span>></span>
+	    문의 상세보기
+	    <span>></span>
+	    답변 등록
+	</div>
+
+    <!-- 문의 정보 -->
+    <div class="card-answerWrite">
+        <div class="card-title-answerWrite">문의 정보</div>
+        <div class="inquiry-info-answerWrite">
+
+            <div class="info-row-answerWrite">
+                <div class="info-label-answerWrite">제목</div>
+                <div class="info-value-answerWrite" th:text="${data.title}"></div>
+            </div>
+
+            <div class="info-row-answerWrite">
+                <div class="info-label-answerWrite">작성자</div>
+                <div class="info-value-answerWrite" th:text="${data.memberId}"></div>
+            </div>
+
+            <div class="info-row-answerWrite">
+                <div class="info-label-answerWrite">등록일</div>
+                <div class="info-value-answerWrite" th:text="${#dates.format(data.createdAt,'yyyy.MM.dd HH:mm:ss')}"></div>
+            </div>
+
+            <div class="info-row-answerWrite">
+                <div class="info-label-answerWrite">문의 내용</div>
+                <div class="info-value-answerWrite" th:text="${data.content}"></div>
+            </div>
+
+            <div class="info-row-answerWrite">
+                <div class="info-label-answerWrite">비공개 여부</div>
+			    <div class="info-value-answerWrite" th:text="${data.isPublic == 'N' ? '비공개 🔒' : '공개 🔓'}"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- 답변 입력 -->
+	<div class="card-answerWrite">
+	    <div class="card-title-answerWrite">답변 정보 입력</div>
+	    
+	    <form th:action="@{/questions/answer}"
+	          method="post" onsubmit="return checkAnswer();">
+			<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+	        <input type="hidden" name="questionId" th:value="${data.questionId}">
+	        <!-- 임시 -->
+	        <input type="hidden" name="memberId" value="1">
+	        <div class="form-group-answerWrite">
+	            <label class="label-answerWrite"> 답변 내용 <span class="required-answerWrite">*</span> </label>
+	            <textarea class="textarea-answerWrite" id="content" name="content" maxlength="1000" placeholder="답변 내용을 입력하세요."></textarea>
+	            <div class="text-count-answerWrite"> <span id="count">0</span> / 1000 </div>
+	        </div>
+	
+	        <div class="btn-area-answerWrite">
+	            <button type="submit" class="btn-answerWrite btn-submit-answerWrite"> 등록하기 </button>
+	            <button type="button" class="btn-answerWrite btn-cancel-answerWrite" onclick="history.back()"> 취소
+	            </button>
+	        </div>
+	    </form>
+	</div>
+</div>
+
+
+	<script>
+	const textarea = document.getElementById("content");
+	textarea.addEventListener("input", function(){
+ 	document.getElementById("count").innerText = this.value.length; 
+	});
+	
+	function checkAnswer(){
+	    let content = document.getElementById("content").value.trim();
+	    if(content === ""){
+ 			alert("답변 내용을 입력해주세요."); document.getElementById("content").focus(); 
+	        return false;
+	    }
+	    return confirm("답변을 등록하시겠습니까?");
+	}
+	</script>
+</div>
+</body>
+</html>

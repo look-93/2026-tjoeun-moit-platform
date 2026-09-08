@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<body>
+	<th:block th:fragment="mypageSubHeader">	
+        <!-- PROFILE -->
+		<div class="mypage-profile-card">
+			<div class="profile-preview-sub">
+					
+	            <img th:if="${dto.profileUrl != null}"
+	                 th:src="@{${dto.profileUrl}}"
+	                 alt="프로필">
+	
+	            <span th:if="${dto.profileUrl == null}"
+	                  th:text="${#strings.substring(dto.nickname,0,1)}">
+	            </span>
+					
+			</div>
+			
+			<div>
+			    <h2 th:text="${dto.nickname}"></h2>
+			    <p th:text="${dto.email}"></p>
+			    <span class="badge" th:switch="${#authentication.principal.typeName}">
+                      <span th:case="'ROLE_MEMBER'">
+                          일반회원
+                      </span>
+
+                      <span th:case="'ROLE_PARTNER'">
+                          제휴업체
+                      </span>
+
+                      <span th:case="'ROLE_ADMIN'">
+                          관리자
+                      </span>
+
+                      <span th:case="*"
+                            th:text="${#authentication.principal.typeName}">
+                      </span>
+               </span>
+			</div>
+		</div>
+	</th:block>
+</body>
+</html>
