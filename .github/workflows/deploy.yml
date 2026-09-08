@@ -122,10 +122,11 @@ jobs:
                       mkdir -p /home/ubuntu/app/moit-v3/back/build/libs
 
             # JAR 전송용 임시 파일 생성 추가
+            # JAR 준비
             - name: Prepare Backend JAR
               run: |
-                  mkdir -p deploy
-                  cp "${{ env.JAR_FILE }}" deploy/app.jar
+                  cp "${{ env.JAR_FILE }}" app.jar
+                  ls -lh app.jar
 
             # JAR EC2 전송
             - name: Copy Backend JAR to EC2
@@ -134,13 +135,15 @@ jobs:
                   host: ${{ secrets.EC2_HOST }}
                   username: ${{ secrets.EC2_USER }}
                   key: ${{ secrets.EC2_SSH_KEY }}
-                  source: "deploy/app.jar"
+                  source: "app.jar"
                   target: "/home/ubuntu/app/moit-v3/back/build/libs"
-            #추가
+
+            # .env 준비
             - name: Prepare Backend .env
               run: |
-                  mkdir -p deploy
-                  cp moit-v3/back/.env deploy/.env
+                  cp moit-v3/back/.env .env
+                  ls -lh .env
+
             # Backend .env EC2 전송
             - name: Copy Backend .env to EC2
               uses: appleboy/scp-action@v0.1.7
@@ -148,7 +151,7 @@ jobs:
                   host: ${{ secrets.EC2_HOST }}
                   username: ${{ secrets.EC2_USER }}
                   key: ${{ secrets.EC2_SSH_KEY }}
-                  source: "deploy/.env"
+                  source: ".env"
                   target: "/home/ubuntu/app/moit-v3/back"
 
             # EC2 파일 확인
@@ -258,21 +261,15 @@ jobs:
             - name: Archive frontend build
               run: |
                   cd moit-v3/front
-                  tar -czf ../frontend-build.tar.gz .next public package.json .env.production
-            # 추가
-            - name: Prepare frontend archive
-              run: |
-                  mkdir -p deploy
-                  cp moit-v3/frontend-build.tar.gz deploy/frontend-build.tar.gz
-
-            # Frontend 압축파일 EC2 전송
+                  tar -czf ../../frontend-build.tar.gz .next public package.json .env.production
+            # Frontend 압축파일 전송
             - name: Copy frontend archive to EC2
               uses: appleboy/scp-action@v0.1.7
               with:
                   host: ${{ secrets.EC2_HOST }}
                   username: ${{ secrets.EC2_USER }}
                   key: ${{ secrets.EC2_SSH_KEY }}
-                  source: "deploy/frontend-build.tar.gz"
+                  source: "frontend-build.tar.gz"
                   target: "/home/ubuntu/app/moit-v3/front"
 
             # 압축 해제
