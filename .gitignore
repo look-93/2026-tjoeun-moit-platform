@@ -41,7 +41,6 @@ Thumbs.db
 application-local.properties
 application-oauth.properties
 application-local.yml
-application-oauth.yml
 
 # =========================
 # React (frontend)
