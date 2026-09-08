@@ -194,11 +194,11 @@ jobs:
                   username: ${{ secrets.EC2_USER }}
                   key: ${{ secrets.EC2_SSH_KEY }}
                   script: |
-                      cd /home/ubuntu/app/moit-v3/back/build/libs
+                      cd /home/ubuntu/app/moit-v3/back
 
                       pm2 delete moit-v3-backend || true
 
-                      export $(cat /home/ubuntu/app/moit-v3/back/.env | xargs)
+                      export $(cat .env | xargs)
 
                       pm2 start java \
                         --name "moit-v3-backend" \
@@ -206,7 +206,7 @@ jobs:
                         -Dspring.profiles.active=prod \
                         -Dserver.port=8081 \
                         -jar \
-                        app.jar
+                        build/libs/app.jar
     # ============================================================
     # Frontend
     # ============================================================
