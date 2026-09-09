@@ -87,6 +87,8 @@ springdoc:
     enabled: true
   swagger-ui:
     enabled: true
+app:
+  frontend-url: ${FRONTEND_URL:http://localhost:3000}
 #server:
 #  port: 8484
 

@@ -87,5 +87,7 @@ springdoc:
         enabled: false
     swagger-ui:
         enabled: false
+app:
+  frontend-url: https://moit-web-v3.duckdns.org
 # server:
 #     port: 8081

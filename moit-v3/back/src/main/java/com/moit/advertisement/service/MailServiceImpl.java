@@ -63,7 +63,7 @@ public class MailServiceImpl implements MailService {
 		  
 		  <div style="margin:35px 0;text-align:center;">
 		  
-		  <a href="http://localhost:3000/user/mypage/advertiseList" style="
+		  <a href="https://moit-web-v3.duckdns.org/user/mypage/advertiseList" style="
 		  display:inline-block; padding:14px 28px; background:#0d6efd; color:#ffffff;
 		  text-decoration:none; border-radius:6px; font-weight:bold;"> 광고 연장 신청하기 </a>
 		  
@@ -180,7 +180,7 @@ public class MailServiceImpl implements MailService {
                             <div style="margin:35px 0;
                                         text-align:center;">
 
-                                <a href="http://localhost:3000/user/mypage/advertiseList"
+                                <a href="https://moit-web-v3.duckdns.org/user/mypage/advertiseList"
                                    style="
                                    display:inline-block;
                                    padding:14px 28px;
