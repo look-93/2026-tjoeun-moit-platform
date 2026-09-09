@@ -74,7 +74,11 @@ dependencies {
     
     // SMS
     implementation 'com.solapi:sdk:1.1.0'
-
+	implementation 'org.jetbrains.kotlin:kotlin-stdlib:2.3.0'
+	implementation 'org.jetbrains.kotlin:kotlin-reflect:2.3.0'
+	implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.10.0'
+	implementation platform('org.jetbrains.kotlinx:kotlinx-serialization-bom:1.10.0')
+	
     // LLM-RAG PDFBox
     implementation 'org.apache.pdfbox:pdfbox:3.0.8'
 
