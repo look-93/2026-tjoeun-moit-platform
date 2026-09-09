@@ -46,9 +46,13 @@ mybatis:
 
 logging:
   level:
+    org.springframework.security: DEBUG
+    org.springframework.security.oauth2: DEBUG
+    org.springframework.web.client: DEBUG
     org.hibernate: info
     org.springframework: info
     com.the703: debug
+
 
 # 업로드 경로 설정 - 두 파일 방식이 다름
 file:

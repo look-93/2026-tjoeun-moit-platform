@@ -270,6 +270,7 @@ public class SecurityConfig {
                     request.getRequestURI().startsWith("/api/")
             )
         );
+       
 
         return http.build();
     }
