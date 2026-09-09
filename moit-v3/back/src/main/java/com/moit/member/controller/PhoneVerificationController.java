@@ -25,7 +25,7 @@ public class PhoneVerificationController {
 	public ResponseEntity<String> sendCode(
 			@Valid @RequestBody PhoneVerificationRequestDto request
 			){
-		
+		System.out.println("========== PHONE SEND API 진입 ==========");
 		phoneVerificationService.sendVerificationCode(request.getMobile());
 		
 		return ResponseEntity.ok("인증번호가 발송되었습니다.");		
