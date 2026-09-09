@@ -73,4 +73,3 @@ coverage/
 
 **/.env
 **/.env.local
-**/.env.production
