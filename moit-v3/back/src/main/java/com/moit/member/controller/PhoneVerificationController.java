@@ -27,7 +27,7 @@ public class PhoneVerificationController {
 			){
 		System.out.println("========== PHONE SEND API 진입 ==========");
 		phoneVerificationService.sendVerificationCode(request.getMobile());
-		
+		System.out.println("========== PHONE SEND API 성공 ==========");
 		return ResponseEntity.ok("인증번호가 발송되었습니다.");		
 	}
 	
@@ -36,13 +36,14 @@ public class PhoneVerificationController {
 	public ResponseEntity<String> verifyCode(
 			@Valid @RequestBody PhoneVerificationConfirmDto request
 			){
-		
+		System.out.println("========== PHONE VERIFY API 진입 ==========");
+		System.out.println("mobile = " + request.getMobile());
 		boolean verified = phoneVerificationService.verifyCode(request.getMobile(), request.getCode());
 		
 		if(!verified) {
 			return ResponseEntity.badRequest().body("인증번호가 일치하지 않거나 만료되었습니다.");
 		}
-		
+		System.out.println("verified = " + verified);
 		return ResponseEntity.ok("휴대폰 인증이 완료되었습니다.");
 	}
 	
