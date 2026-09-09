@@ -164,7 +164,7 @@ function write() {
             // 혹시 입력 중이라면 최신값으로 요청
             aiRequestedRef.current = true;
 
-            console.log("🤖 AI 요청:", currentTitle);
+            //console.log("🤖 AI 요청:", currentTitle);
 
             dispatch(
                 recommendMeetupRequest({
@@ -180,7 +180,7 @@ function write() {
     useEffect(() => {
         if (!aiRecommendation) return;
 
-        console.log("🤖 AI 추천 결과:", aiRecommendation);
+        //console.log("🤖 AI 추천 결과:", aiRecommendation);
 
         form.setFieldsValue({
             title: aiRecommendation.title,

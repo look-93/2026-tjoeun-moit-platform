@@ -36,21 +36,41 @@ function UserLayout({ children }) {
   const point = useSelector((state) => state.user?.point ?? 0);
 
   useEffect(() => {
-
-    if (isPublicPage) return; // 로그인 필요없는 페이지는 체크 skip
-
-    const accessToken = localStorage.getItem("accessToken");
-
-    if (!accessToken) {
-      router.replace("/user/member/login");
-    }
+    if (!router.isReady) return;
+    if (isPublicPage) return;
 
     if (!isInitialized) return;
 
-    if (!user) {
+    const accessToken = localStorage.getItem("accessToken");
+
+    if (!accessToken || !user) {
       router.replace("/user/member/login");
+      return;
     }
-  }, [user, isInitialized, isPublicPage, router]);
+  }, [
+    router.isReady,
+    isPublicPage,
+    isInitialized,
+    user,
+    router,
+  ]);
+  
+  // useEffect(() => {
+
+  //   if (isPublicPage) return; // 로그인 필요없는 페이지는 체크 skip
+
+  //   const accessToken = localStorage.getItem("accessToken");
+
+  //   if (!accessToken) {
+  //     router.replace("/user/member/login");
+  //   }
+
+  //   if (!isInitialized) return;
+
+  //   if (!user) {
+  //     router.replace("/user/member/login");
+  //   }
+  // }, [user, isInitialized, isPublicPage, router]);
   
   useEffect(() => {
     if (isMypage) {

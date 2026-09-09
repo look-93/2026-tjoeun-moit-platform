@@ -606,7 +606,7 @@ const fetchPopularMeetupsAPI = () => api.get(`${MEETUP_API_BASE}/popular`);
 export function* fetchPopularMeetups() {
     try {
         const result = yield call(fetchPopularMeetupsAPI);
-        console.log("인기모임조회성공", result.data);
+        //console.log("인기모임조회성공", result.data);
 
         yield put(fetchPopularMeetupsSuccess(result.data));
     } catch (err) {
