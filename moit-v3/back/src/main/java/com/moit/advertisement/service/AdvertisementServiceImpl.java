@@ -4,6 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -19,6 +22,7 @@ import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -96,8 +100,9 @@ public class AdvertisementServiceImpl implements AdvertisementService {
 
     private final MailService mailService;
     private final AdvertisementAiSummaryRepository aiSummaryRepository;
-
-    private static final String UPLOAD_PATH = "C:/upload/ad";
+    
+    @Value("${resource.path}")
+    private String resourcePath;
 
     // =========================================================
     // 관리자 탭별 전용 구현 메서드
@@ -757,8 +762,10 @@ public class AdvertisementServiceImpl implements AdvertisementService {
 	                     "이미지 정보가 올바르지 않습니다."
 	             );
 	         }
-	
-	         File directory = new File(UPLOAD_PATH);
+	         
+	         
+	         Path uploadPath = Paths.get(resourcePath, "ad");
+	         File directory = uploadPath.toFile();
 	
 	         if (!directory.exists()
 	                 && !directory.mkdirs()) {
@@ -874,10 +881,17 @@ public class AdvertisementServiceImpl implements AdvertisementService {
 
         String fileName = new File(imageUrl).getName();
 
-        File file = new File(UPLOAD_PATH, fileName);
-
-        if (file.exists()) {
-            file.delete();
+        Path uploadPath = Paths.get(resourcePath, "ad");
+        Path filePath = uploadPath.resolve(fileName);
+        
+        if (Files.exists(filePath)) {
+            try {
+                Files.delete(filePath);
+            } catch (IOException e) {
+                throw new IllegalStateException(
+                        "광고 이미지 삭제에 실패했습니다.", e
+                );
+            }
         }
     }
 
@@ -2761,13 +2775,15 @@ public class AdvertisementServiceImpl implements AdvertisementService {
 
     private void deletePhysicalFiles(
             List<AdvertisementImage> images) {
+    	
+    	Path uploadPath = Paths.get(resourcePath, "ad");
 
         for (AdvertisementImage image : images) {
 
             String imageUrl =
                     image.getImageUrl();
 
-            if (imageUrl == null) {
+            if (imageUrl == null || imageUrl.isBlank()) {
                 continue;
             }
 
@@ -2776,15 +2792,18 @@ public class AdvertisementServiceImpl implements AdvertisementService {
                             "/upload/ad/",
                             ""
                     );
-
-            File file =
-                    new File(
-                            UPLOAD_PATH,
-                            fileName
-                    );
-
-            if (file.exists()) {
-                file.delete();
+            
+            Path filePath = uploadPath.resolve(fileName);
+            
+            try {
+                if (Files.exists(filePath)) {
+                    Files.delete(filePath);
+                }
+            } catch (IOException e) {
+                throw new IllegalStateException(
+                        "광고 이미지 삭제에 실패했습니다.",
+                        e
+                );
             }
         }
     }
