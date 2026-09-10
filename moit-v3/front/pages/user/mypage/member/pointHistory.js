@@ -1,3 +1,4 @@
+"use client";
 import React, { useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -13,16 +14,16 @@ import {
   Statistic,
 } from 'antd';
 
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from 'recharts';
+// import {
+//   BarChart,
+//   Bar,
+//   XAxis,
+//   YAxis,
+//   CartesianGrid,
+//   Tooltip,
+//   Legend,
+//   ResponsiveContainer,
+// } from 'recharts';
 
 import {
   getPointHistoryRequest,
@@ -464,7 +465,7 @@ function pointHistory() {
                   width="100%"
                   height="100%"
                 >
-                  <BarChart
+                  {/* <BarChart
                     data={chartData}
                     margin={{
                       top: 20,
@@ -504,7 +505,7 @@ function pointHistory() {
                       fill="#ff4d4f"
                     />
 
-                  </BarChart>
+                  </BarChart> */}
                 </ResponsiveContainer>
               </div>
             </Card>

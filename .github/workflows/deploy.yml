@@ -86,6 +86,7 @@ jobs:
                   echo "GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}" >> moit-v3/back/.env
 
                   echo "KAKAO_CLIENT_ID=${{ secrets.KAKAO_CLIENT_ID }}" >> moit-v3/back/.env
+                  echo "KAKAO_CLIENT_SECRET=${{ secrets.KAKAO_CLIENT_SECRET }}" >> moit-v3/back/.env
 
                   echo "NAVER_CLIENT_ID=${{ secrets.NAVER_CLIENT_ID }}" >> moit-v3/back/.env
                   echo "NAVER_CLIENT_SECRET=${{ secrets.NAVER_CLIENT_SECRET }}" >> moit-v3/back/.env
