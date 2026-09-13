@@ -287,6 +287,7 @@ public class SecurityConfig {
         // Next.js
         configuration.setAllowedOrigins(
             List.of("http://localhost:3000",
+            		"http://localhost:3001",
                     "https://moit-web-v3.duckdns.org"
             )
         );
