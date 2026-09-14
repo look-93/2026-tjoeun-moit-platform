@@ -126,7 +126,7 @@ MOIT(모잇)은 스터디, 프로젝트, 운동, 취미 활동 등 **공통의 �
 
 ### DevOps & Tools
 
-- Git, GitHub (GitHub Flow), Notion, Postman
+- Git, GitHub (GitHub Flow), Notion, Google Sheets
 
 ---
 
@@ -134,7 +134,7 @@ MOIT(모잇)은 스터디, 프로젝트, 운동, 취미 활동 등 **공통의 �
 
 - 팀 프로젝트 진행
 - **GitHub Flow** 기반 코드 리뷰 및 브랜치 전략 준수
-- **Notion**을 활용한 WBS, API 명세서, 이슈 트래킹 관리
+- **Notion, Google Sheets**을 활용한 WBS, API 명세서, 이슈 트래킹 관리
 
 ---
 
@@ -142,9 +142,9 @@ MOIT(모잇)은 스터디, 프로젝트, 운동, 취미 활동 등 **공통의 �
 
 | 기능               | 시연 영상                                                       |
 | ------------------ | --------------------------------------------------------------- |
-| 회원가입 및 로그인 | [YouTube에서 보기](https://www.youtube.com/watch?v=qlZsblUcrpQ) |
-| 모임 등록 및 신청  | [YouTube에서 보기](https://youtu.be/W8uqEza0bNc)                |
-| 문의 등록          | [YouTube에서 보기](https://www.youtube.com/watch?v=PCCIJsmrKG8) |
-| 후기 등록          | [YouTube에서 보기](https://www.youtube.com/watch?v=pyTIHHSDAqs) |
-| 신고 등록          | [YouTube에서 보기](https://www.youtube.com/watch?v=QSb3lZ5VrFA) |
-| 광고               | [YouTube에서 보기](https://www.youtube.com/watch?v=NZkUY0mHTUU) |
+| 회원가입 및 로그인 | [YouTube에서 보기](https://www.youtube.com/watch?v=qLQ4DsPll1A) |
+| 모임 등록 및 신청  | [YouTube에서 보기](https://youtu.be/IGa7PsvydMg)                |
+| 문의 등록          | [YouTube에서 보기](https://www.youtube.com/watch?v=MbnXIlCf5fw) |
+| 후기 등록          | [YouTube에서 보기](https://www.youtube.com/watch?v=X1sHxoJ5mC0&feature=youtu.be) |
+| 신고 등록          | [YouTube에서 보기](https://www.youtube.com/watch?v=HBbAt6RWaLs) |
+| 광고               | [YouTube에서 보기](https://www.youtube.com/watch?v=lWMGXcXgQ-U) |
