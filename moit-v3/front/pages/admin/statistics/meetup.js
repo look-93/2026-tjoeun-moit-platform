@@ -34,7 +34,7 @@ export default function MeetupStatisticsPage() {
     const getMeetupStatistics = async () => {
         try {
             const response = await axios.get(
-                `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/statistics/meetups/result`
+                `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/admin/statistics/meetups/result`
             );
 
             //console.log("Spring 통계 응답:", response.data);

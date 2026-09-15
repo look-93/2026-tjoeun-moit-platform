@@ -18,7 +18,7 @@ import lombok.RequiredArgsConstructor;
 @Tag(name = "statistics Api", description = "분석 관련 API")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/statistics")
+@RequestMapping("/api/admin/statistics")
 public class StatisticsController {
 
     private final StatisticsSyncService statisticsSyncService;
