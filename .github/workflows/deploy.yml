@@ -121,6 +121,7 @@ jobs:
                   key: ${{ secrets.EC2_SSH_KEY }}
                   script: |
                       mkdir -p /home/ubuntu/app/moit-v3/back/build/libs
+                      mkdir -p /home/ubuntu/app/moit-v3/back/build/libs/uploads
 
             # JAR 전송용 임시 파일 생성 추가
             # JAR 준비
@@ -138,6 +139,16 @@ jobs:
                   key: ${{ secrets.EC2_SSH_KEY }}
                   source: "app.jar"
                   target: "/home/ubuntu/app/moit-v3/back/build/libs"
+                  
+            # 기본 이미지 전송
+            - name: Copy no-image.png to EC2
+              uses: appleboy/scp-action@v0.1.7
+              with:
+                  host: ${{ secrets.EC2_HOST }}
+                  username: ${{ secrets.EC2_USER }}
+                  key: ${{ secrets.EC2_SSH_KEY }}
+                  source: "moit-v3/back/uploads/no-image.png"
+                  target: "/home/ubuntu/app/moit-v3/back/build/libs/uploads"
 
             # .env 준비
             - name: Prepare Backend .env
