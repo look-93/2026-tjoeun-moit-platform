@@ -94,6 +94,9 @@ springdoc:
     enabled: true
 app:
   frontend-url: ${FRONTEND_URL:http://localhost:3000}
+
+statistics:
+  django-url: http://localhost:8000/analysis/meetups/
 #server:
 #  port: 8484
 

@@ -73,3 +73,9 @@ coverage/
 
 **/.env
 **/.env.local
+
+# Django
+django/venv/
+django/**/__pycache__/
+django/**/*.pyc
+django/db.sqlite3

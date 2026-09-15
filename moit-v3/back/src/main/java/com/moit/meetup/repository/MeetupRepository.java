@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import com.moit.meetup.dto.MeetupCategoryStatisticsDto.MeetupCategoryStatisticsRawDto;
 import com.moit.meetup.dto.MeetupCountResponseDto;
 import com.moit.meetup.dto.MyMeetupCountResponseDto;
 import com.moit.meetup.dto.PopularMeetupResponseDto;
@@ -287,4 +288,33 @@ public interface MeetupRepository extends JpaRepository<Meetup, Long>{
 		    @Param("start") LocalDateTime start,
 		    @Param("end") LocalDateTime end
 		);
+	
+	//카테고리별 모임 통계
+	@Query("""
+	        SELECT new com.moit.meetup.dto.MeetupCategoryStatisticsDto$MeetupCategoryStatisticsRawDto(
+	            CASE
+	                WHEN m.meetupCategory.parent IS NULL
+	                THEN m.meetupCategory.categoryName
+	                ELSE m.meetupCategory.parent.categoryName
+	            END,
+	            m.maxParticipants,
+	            (
+	                SELECT COUNT(ma)
+	                FROM MeetupApplication ma
+	                WHERE ma.meetup = m
+	                  AND ma.applyStatus =
+	                      com.moit.meetup.enums.ApplyStatus.APPROVED
+	            )
+	        )
+	        FROM Meetup m
+	        WHERE m.deleteYn = 'N'
+	        ORDER BY
+	            CASE
+	                WHEN m.meetupCategory.parent IS NULL
+	                THEN m.meetupCategory.categoryName
+	                ELSE m.meetupCategory.parent.categoryName
+	            END
+	    """)
+	List<MeetupCategoryStatisticsRawDto> getMeetupCategoryStatistics();
+	
 }

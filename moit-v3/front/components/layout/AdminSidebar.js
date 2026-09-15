@@ -7,6 +7,7 @@ import {
     StarOutlined,
     WarningOutlined,
     NotificationOutlined,
+    BarChartOutlined
 } from "@ant-design/icons";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -71,12 +72,36 @@ function AdminSidebar() {
                 </Link>
             ),
         },
+
+        // 분석관리
+        {
+            key: "/admin/statistics",
+            icon: <BarChartOutlined />,
+            label: "분석관리",
+            children: [
+                {
+                    key: "/admin/statistics/meetup",
+                    label: (
+                        <Link href="/admin/statistics/meetup">
+                            <a style={{ textDecoration: "none" }}>모임통계</a>
+                        </Link>
+                    ),
+                },
+            ],
+        },
     ];
 
     // 현재 URL에 해당하는 메뉴 활성화
+    // const selectedKey =
+    //     menuItems.find((item) => router.pathname.startsWith(item.key))?.key ||
+    //     "";
     const selectedKey =
-        menuItems.find((item) => router.pathname.startsWith(item.key))?.key ||
-        "";
+    menuItems
+        .flatMap((item) => [
+            ...(item.children || []),
+            item,            
+        ])
+        .find((item) => router.pathname.startsWith(item.key))?.key || "";
 
     return (
         <Sider width={240} className="admin-sidebar" theme="light">
