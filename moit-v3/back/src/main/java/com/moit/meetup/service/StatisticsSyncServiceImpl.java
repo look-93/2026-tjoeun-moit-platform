@@ -167,13 +167,13 @@ public class StatisticsSyncServiceImpl implements StatisticsSyncService{
                     );
 
 
-            System.out.println("Django 통계 전송 성공");
-            System.out.println("Django 응답 : " + response);
+            //System.out.println("Django 통계 전송 성공");
+            //System.out.println("Django 응답 : " + response);
 
 
         } catch (Exception e) {
 
-            System.out.println("Django 통계 전송 실패");
+            //System.out.println("Django 통계 전송 실패");
             e.printStackTrace();
         }
     }

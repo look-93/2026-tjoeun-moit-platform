@@ -22,8 +22,8 @@ public class MeetupScheduler {
     }
     
     // 매일 새벽 1시 실행
-    //@Scheduled(cron = "0 0 1 * * *", zone = "Asia/Seoul")
-    @Scheduled(cron = "0 * * * * *")   // 테스트용 1분마다
+    @Scheduled(cron = "0 0 1 * * *", zone = "Asia/Seoul")
+    //@Scheduled(cron = "0 * * * * *")   // 테스트용 1분마다
     public void syncMeetupStatistics() {
 
         statisticsSyncService.syncMeetupCategoryStatistics();
