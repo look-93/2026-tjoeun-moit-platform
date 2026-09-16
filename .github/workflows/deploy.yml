@@ -406,13 +406,23 @@ jobs:
                       echo "=== After extract ==="
                       ls -al
 
-                      # Python 가상환경 생성
-                      if [ ! -d "venv" ]; then
+                      # Python 가상환경 확인 및 생성
+                      if [ ! -x "venv/bin/python" ]; then
+                          echo "⚠️ Python 가상환경이 없거나 손상되어 있어 재생성합니다."
+                          rm -rf venv
                           python3 -m venv venv
                       fi
 
                       # 가상환경 활성화
                       source venv/bin/activate
+
+                      # Python / Django 확인
+                      echo "=== Python ==="
+                      which python
+                      python --version
+
+                      echo "=== Django ==="
+                      python -m django --version
 
                       # pip 업데이트
                       pip install --upgrade pip
@@ -424,8 +434,9 @@ jobs:
                       pm2 delete moit-v3-django || true
 
                       # Django 실행
-                      pm2 start venv/bin/python \
+                      pm2 start /home/ubuntu/app/moit-v3/django/venv/bin/python \
                         --name "moit-v3-django" \
+                        --cwd /home/ubuntu/app/moit-v3/django \
                         -- \
                         manage.py runserver 0.0.0.0:8000
 
