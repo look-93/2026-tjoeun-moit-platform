@@ -1,6 +1,7 @@
 package com.moit.advertisement.service;
 
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -241,7 +242,7 @@ public class AdvertisementCalculationServiceImpl implements AdvertisementCalcula
         return totalExtra;
     }
     
-    // 광고 기간 계산
+ // 광고 기간 계산
     @Override
     public int calculateTotalDays(
             LocalDateTime startDatetime,
@@ -253,29 +254,27 @@ public class AdvertisementCalculationServiceImpl implements AdvertisementCalcula
             return 0;
         }
 
-
-        LocalDate startDate =
-                startDatetime.toLocalDate();
-
-        LocalDate endDate =
-                endDatetime.toLocalDate();
-
-
-        if (endDate.isBefore(startDate)) {
+        if (endDatetime.isBefore(startDatetime)) {
             return 0;
         }
 
-
         /*
-         * 시작일과 종료일을 모두 포함한다.
+         * 실제 시작/종료 시간 기준으로 계산한다.
          *
-         * 09/01 ~ 09/01 = 1일
-         * 09/01 ~ 09/02 = 2일
-         * 09/01 ~ 09/30 = 30일
+         * 09/01 02:00 ~ 09/01 10:00 = 1일
+         * 09/01 02:00 ~ 09/02 02:00 = 1일
+         * 09/01 02:00 ~ 09/02 02:01 = 2일
+         * 09/01 02:00 ~ 09/07 04:00 = 6일 2시간 → 7일
          */
-        return (int) ChronoUnit.DAYS.between(
-                startDate,
-                endDate
-        ) + 1;
+        Duration duration =
+                Duration.between(startDatetime, endDatetime);
+
+        long seconds = duration.getSeconds();
+
+        // 24시간 단위로 올림
+        return Math.max(
+                1,
+                (int) ((seconds + 86399) / 86400)
+        );
     }
 }
