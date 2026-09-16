@@ -139,7 +139,7 @@ jobs:
                   key: ${{ secrets.EC2_SSH_KEY }}
                   source: "app.jar"
                   target: "/home/ubuntu/app/moit-v3/back/build/libs"
-                  
+
             # 기본 이미지 전송
             - name: Copy no-image.png to EC2
               uses: appleboy/scp-action@v0.1.7
@@ -322,3 +322,111 @@ jobs:
                       pm2 delete moit-v3-frontend || true
 
                       PORT=3001 pm2 start npm --name "moit-v3-frontend" -- run start
+    # ============================================================
+    # Django
+    # ============================================================
+    django:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v3
+
+            # Python 3.12
+            - name: Set up Python
+              uses: actions/setup-python@v4
+              with:
+                  python-version: "3.12"
+
+            # Django 파일 확인
+            - name: Check Django files
+              run: |
+                  echo "=== Django directory ==="
+                  ls -al moit-v3/django
+
+                  echo "=== requirements.txt ==="
+                  cat moit-v3/django/requirements.txt
+
+            # Django 배포 파일 압축
+            - name: Archive Django
+              run: |
+                  cd moit-v3/django
+
+                  tar \
+                    --exclude='venv' \
+                    --exclude='__pycache__' \
+                    --exclude='*.pyc' \
+                    -czf ../../django-app.tar.gz .
+
+                  ls -lh ../../django-app.tar.gz
+
+            # EC2 Django 디렉터리 생성
+            - name: Ensure Django directory exists
+              uses: appleboy/ssh-action@v0.1.7
+              with:
+                  host: ${{ secrets.EC2_HOST }}
+                  username: ${{ secrets.EC2_USER }}
+                  key: ${{ secrets.EC2_SSH_KEY }}
+                  script: |
+                      mkdir -p /home/ubuntu/app/moit-v3/django
+
+            # Django 압축파일 전송
+            - name: Copy Django archive to EC2
+              uses: appleboy/scp-action@v0.1.7
+              with:
+                  host: ${{ secrets.EC2_HOST }}
+                  username: ${{ secrets.EC2_USER }}
+                  key: ${{ secrets.EC2_SSH_KEY }}
+                  source: "django-app.tar.gz"
+                  target: "/home/ubuntu/app/moit-v3/django"
+
+            # Django 설치 및 실행
+            - name: Setup and Run Django
+              uses: appleboy/ssh-action@v0.1.7
+              with:
+                  host: ${{ secrets.EC2_HOST }}
+                  username: ${{ secrets.EC2_USER }}
+                  key: ${{ secrets.EC2_SSH_KEY }}
+                  script: |
+                      cd /home/ubuntu/app/moit-v3/django
+
+                      echo "=== Before extract ==="
+                      ls -al
+
+                      # 압축파일 확인
+                      test -f django-app.tar.gz || {
+                        echo "❌ django-app.tar.gz not found"
+                        exit 1
+                      }
+
+                      # 압축 해제
+                      tar -xzf django-app.tar.gz
+                      rm -f django-app.tar.gz
+
+                      echo "=== After extract ==="
+                      ls -al
+
+                      # Python 가상환경 생성
+                      if [ ! -d "venv" ]; then
+                          python3 -m venv venv
+                      fi
+
+                      # 가상환경 활성화
+                      source venv/bin/activate
+
+                      # pip 업데이트
+                      pip install --upgrade pip
+
+                      # requirements 설치
+                      pip install -r requirements.txt
+
+                      # 기존 Django 프로세스 종료
+                      pm2 delete moit-v3-django || true
+
+                      # Django 실행
+                      pm2 start venv/bin/python \
+                        --name "moit-v3-django" \
+                        -- \
+                        manage.py runserver 0.0.0.0:8000
+
+                      pm2 save
