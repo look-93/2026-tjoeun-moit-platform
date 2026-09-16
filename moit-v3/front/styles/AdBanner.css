@@ -1,4 +1,4 @@
-.main-ad-card {
+배너css main-ad-card {
     position: relative;
     overflow: hidden;
     padding: 0;
@@ -22,13 +22,11 @@
     object-fit: cover;
 }
 
-
 /* MAIN */
 .ad-image.ad-MAIN {
     width: 100%;
     height: 400px;
 }
-
 
 /* 모집 목록 배너 */
 .ad-image.ad-MEETUP_LIST_BANNER {
@@ -36,20 +34,21 @@
     height: 300px;
 }
 
-
 /* 모집 목록 사이드 */
 .ad-image.ad-MEETUP_LIST_SIDEBAR {
-    width: 300px;
+    width: 100%;
     height: 500px;
+    display: block;
+    object-fit: contain;
 }
-
 
 /* 모집 상세 사이드 */
 .ad-image.ad-MEETUP_DETAIL_SIDEBAR {
-    width: 300px;
+    width: 100%;
     height: 500px;
+    display: block;
+    object-fit: contain;
 }
-
 
 /* =========================================================
    PREMIUM 광고
@@ -68,7 +67,6 @@
     cursor: pointer;
 }
 
-
 /* 제목 */
 
 .premium-ad-title {
@@ -85,7 +83,6 @@
 
     border-radius: 6px;
 }
-
 
 /* 내용 */
 .premium-ad-content {
@@ -112,7 +109,6 @@
     white-space: pre-wrap;
     word-break: break-word;
 }
-
 
 /* 마우스 올리면 내용 내려옴 */
 .premium-ad-overlay:hover .premium-ad-content {
