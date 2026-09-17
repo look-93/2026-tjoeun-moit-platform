@@ -97,6 +97,28 @@ app:
 
 statistics:
   django-url: http://localhost:8000/analysis/meetups/
+
+demo:
+  member:
+    id: ${DEMO_MEMBER_ID}
+    password: ${DEMO_MEMBER_PASSWORD}
+    nickname: ${DEMO_MEMBER_NICKNAME}
+    email: ${DEMO_MEMBER_EMAIL}
+    mobile: ${DEMO_MEMBER_MOBILE}
+
+  member2:
+    id: ${DEMO_MEMBER2_ID}
+    password: ${DEMO_MEMBER2_PASSWORD}
+    nickname: ${DEMO_MEMBER2_NICKNAME}
+    email: ${DEMO_MEMBER2_EMAIL}
+    mobile: ${DEMO_MEMBER2_MOBILE}
+
+  partner:
+    id: ${DEMO_PARTNER_ID}
+    password: ${DEMO_PARTNER_PASSWORD}
+    nickname: ${DEMO_PARTNER_NICKNAME}
+    email: ${DEMO_PARTNER_EMAIL}
+    mobile: ${DEMO_PARTNER_MOBILE}
 #server:
 #  port: 8484
 
