@@ -112,23 +112,23 @@ jobs:
                   echo "NAVER_USER=${{ secrets.NAVER_USER }}" >> moit-v3/back/.env
                   echo "NAVER_PASSWORD=${{ secrets.NAVER_PASSWORD }}" >> moit-v3/back/.env
 
-                  echo "DEMO_MEMBER_ID=${{ secrets.DEMO_MEMBER_ID }}" >> back/.env
-                  echo "DEMO_MEMBER_PASSWORD=${{ secrets.DEMO_MEMBER_PASSWORD }}" >> back/.env
-                  echo "DEMO_MEMBER_NICKNAME=${{ secrets.DEMO_MEMBER_NICKNAME }}" >> back/.env
-                  echo "DEMO_MEMBER_EMAIL=${{ secrets.DEMO_MEMBER_EMAIL }}" >> back/.env
-                  echo "DEMO_MEMBER_MOBILE=${{ secrets.DEMO_MEMBER_MOBILE }}" >> back/.env
+                  echo "DEMO_MEMBER_ID=${{ secrets.DEMO_MEMBER_ID }}" >> moit-v3/back/.env
+                  echo "DEMO_MEMBER_PASSWORD=${{ secrets.DEMO_MEMBER_PASSWORD }}" >> moit-v3/back/.env
+                  echo "DEMO_MEMBER_NICKNAME=${{ secrets.DEMO_MEMBER_NICKNAME }}" >> moit-v3/back/.env
+                  echo "DEMO_MEMBER_EMAIL=${{ secrets.DEMO_MEMBER_EMAIL }}" >> moit-v3/back/.env
+                  echo "DEMO_MEMBER_MOBILE=${{ secrets.DEMO_MEMBER_MOBILE }}" >> moit-v3/back/.env
 
-                  echo "DEMO_MEMBER2_ID=${{ secrets.DEMO_MEMBER2_ID }}" >> back/.env
-                  echo "DEMO_MEMBER2_PASSWORD=${{ secrets.DEMO_MEMBER2_PASSWORD }}" >> back/.env
-                  echo "DEMO_MEMBER2_NICKNAME=${{ secrets.DEMO_MEMBER2_NICKNAME }}" >> back/.env
-                  echo "DEMO_MEMBER2_EMAIL=${{ secrets.DEMO_MEMBER2_EMAIL }}" >> back/.env
-                  echo "DEMO_MEMBER2_MOBILE=${{ secrets.DEMO_MEMBER2_MOBILE }}" >> back/.env
+                  echo "DEMO_MEMBER2_ID=${{ secrets.DEMO_MEMBER2_ID }}" >> moit-v3/back/.env
+                  echo "DEMO_MEMBER2_PASSWORD=${{ secrets.DEMO_MEMBER2_PASSWORD }}" >> moit-v3/back/.env
+                  echo "DEMO_MEMBER2_NICKNAME=${{ secrets.DEMO_MEMBER2_NICKNAME }}" >> moit-v3/back/.env
+                  echo "DEMO_MEMBER2_EMAIL=${{ secrets.DEMO_MEMBER2_EMAIL }}" >> moit-v3/back/.env
+                  echo "DEMO_MEMBER2_MOBILE=${{ secrets.DEMO_MEMBER2_MOBILE }}" >> moit-v3/back/.env
 
-                  echo "DEMO_PARTNER_ID=${{ secrets.DEMO_PARTNER_ID }}" >> back/.env
-                  echo "DEMO_PARTNER_PASSWORD=${{ secrets.DEMO_PARTNER_PASSWORD }}" >> back/.env
-                  echo "DEMO_PARTNER_NICKNAME=${{ secrets.DEMO_PARTNER_NICKNAME }}" >> back/.env
-                  echo "DEMO_PARTNER_EMAIL=${{ secrets.DEMO_PARTNER_EMAIL }}" >> back/.env
-                  echo "DEMO_PARTNER_MOBILE=${{ secrets.DEMO_PARTNER_MOBILE }}" >> back/.env
+                  echo "DEMO_PARTNER_ID=${{ secrets.DEMO_PARTNER_ID }}" >> moit-v3/back/.env
+                  echo "DEMO_PARTNER_PASSWORD=${{ secrets.DEMO_PARTNER_PASSWORD }}" >> moit-v3/back/.env
+                  echo "DEMO_PARTNER_NICKNAME=${{ secrets.DEMO_PARTNER_NICKNAME }}" >> moit-v3/back/.env
+                  echo "DEMO_PARTNER_EMAIL=${{ secrets.DEMO_PARTNER_EMAIL }}" >> moit-v3/back/.env
+                  echo "DEMO_PARTNER_MOBILE=${{ secrets.DEMO_PARTNER_MOBILE }}" >> moit-v3/back/.env
             # EC2 MOIT v3 디렉터리 생성
             - name: Ensure MOIT v3 backend directory exists
               uses: appleboy/ssh-action@v0.1.7
