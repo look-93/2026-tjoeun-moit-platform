@@ -62,7 +62,7 @@ public interface MeetupRepository extends JpaRepository<Meetup, Long>{
 													      AND mb2.startDate <= CURRENT_DATE
 													      AND mb2.endDate >= CURRENT_DATE
 													  )	
-			LEFT JOIN MeetupLike ml ON ml.meetup = m
+			
 			        													    
 		    WHERE m.deleteYn = :deleteYn
 
