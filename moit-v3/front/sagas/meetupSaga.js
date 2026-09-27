@@ -338,7 +338,11 @@ export function* applyMeetup(action) {
         }
     } catch (err) {
         yield put(
-            applyMeetupFailure(err.response?.data?.message || err.message),
+            applyMeetupFailure(
+                err.response?.data?.error ||
+                err.response?.data?.message ||
+                "모임 신청에 실패했습니다.",
+            ),
         );
     }
 }

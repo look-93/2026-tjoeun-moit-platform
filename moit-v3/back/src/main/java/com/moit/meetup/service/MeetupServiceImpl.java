@@ -592,7 +592,7 @@ public class MeetupServiceImpl implements MeetupService{
 	                    meetupApplicationRepository
 	                            .countByMeetupIdAndApplyStatus(
 	                                    meetupId,
-	                                    ApplyStatus.PENDING
+	                                    ApplyStatus.APPROVED
 	                            );
 
 	            if (applicantCount >= meetup.getMaxParticipants()) {
@@ -610,7 +610,7 @@ public class MeetupServiceImpl implements MeetupService{
 	    long applicantCount =
 	            meetupApplicationRepository.countByMeetupIdAndApplyStatus(
 	                    meetupId,
-	                    ApplyStatus.PENDING
+	                    ApplyStatus.APPROVED
 	            );
 	    
 	    if (applicantCount >= meetup.getMaxParticipants()) {
