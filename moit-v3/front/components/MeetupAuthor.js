@@ -33,11 +33,40 @@ function MeetupAuthor({ meetup, meetupId }) {
               )
             : 0;
 
+    const getProfileImageUrl = (profileUrl) => {
+
+        if (!profileUrl) {
+        return "/images/moit.png";
+        }
+
+        if (profileUrl === "/images/moit.png") {
+        return "/images/moit.png";
+        }
+
+        if (profileUrl.startsWith("http")) {
+        return profileUrl;
+        }
+
+        const imageUrl =
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}${profileUrl}`;
+
+        return imageUrl;
+    };
+
     return (
         <Card title="작성자" className="meetup-side-card">
             {/* 기본 프로필 */}
             <Space align="center">
-                <Avatar size={56} icon={<UserOutlined />} />
+                {/* <Avatar size={56} icon={<UserOutlined />} /> */}
+                <Avatar
+                    size={38}
+                    src={getProfileImageUrl(user.profileUrl)}
+                    icon={
+                    !user.profileUrl && (
+                        <UserOutlined />
+                    )
+                    }
+                />
 
                 <div>
                     <Text strong style={{ fontSize: 16 }}>

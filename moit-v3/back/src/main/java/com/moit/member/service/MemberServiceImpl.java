@@ -58,123 +58,128 @@ public class MemberServiceImpl implements MemberService{
 	}	
 	
 	// 회원가입
-	@Transactional
-	@Override
-	public UserDto signup(UserDto dto) {
-		
-		// 휴대폰 인증 여부 확인
-	    if (!phoneVerificationService.isPhoneVerified(dto.getMobile())) {
-	        throw new IllegalArgumentException("휴대폰 인증이 완료되지 않았습니다.");
-	    }
-		
-		//회원 유형 조회
-		MemberType memberType = memberTypeRepository.findById(dto.getMemberTypeId())
-							.orElseThrow(()-> new IllegalArgumentException("존재하지 않는 회원 유형입니다."));
-		
-		Long statusId;
-		
-		if(dto.getMemberTypeId() == 1L) {
-			// 일반회원
-			statusId = 1L;
-		}
-		else if(dto.getMemberTypeId() == 2L) {
-			// 제휴업체
-			statusId = 2L;
-		}
-		else if(dto.getMemberTypeId() == 3L) {
-			// 일반 관리자
-			statusId = 3L;
-		}
-		else {
-			throw new IllegalArgumentException("잘못된 회원 유형입니다.");
-		}
-		
-		// 회원 상태 조회
-		MemberStatus memberStatus = memberStatusRepository.findById(statusId)
-							.orElseThrow(()-> new IllegalArgumentException("존재하지 않는 회원 상태입니다."));
-		
-		// 신고 상태 조회
-		MemberReportStatus reportStatus = memberReportStatusRepository.findById(1L)
-	            	.orElseThrow(() -> new IllegalArgumentException("신고 상태가 존재하지 않습니다.") );
-		
-		// 회원 생성
-		Member member = new Member();
-		
-		member.setLoginId(dto.getLoginId());
-		member.setMobile(dto.getMobile());
-		member.setNickname(dto.getNickname());
-		member.setEmail(dto.getEmail());
-		
-		// 비밀번호 유출 여부 확인
-		int leakCount = passwordLeakService.getLeakCount(dto.getPassword());
+	   @Transactional
+	   @Override
+	   public UserDto signup(UserDto dto) {
+	      
+	      // 일반회원(1), 제휴업체(2)는 휴대폰 인증 필수
+	      // 관리자(3)는 휴대폰 인증 없이 가입 가능
+	      if (dto.getMemberTypeId() != 3L) {
+	          if (!phoneVerificationService.isPhoneVerified(dto.getMobile())) {
+	              throw new IllegalArgumentException("휴대폰 인증이 완료되지 않았습니다.");
+	          }
+	      }
+	      
+	      //회원 유형 조회
+	      MemberType memberType = memberTypeRepository.findById(dto.getMemberTypeId())
+	                     .orElseThrow(()-> new IllegalArgumentException("존재하지 않는 회원 유형입니다."));
+	      
+	      Long statusId;
+	      
+	      if(dto.getMemberTypeId() == 1L) {
+	         // 일반회원
+	         statusId = 1L;
+	      }
+	      else if(dto.getMemberTypeId() == 2L) {
+	         // 제휴업체
+	         statusId = 2L;
+	      }
+	      else if(dto.getMemberTypeId() == 3L) {
+	         // 일반 관리자
+	         statusId = 3L;
+	      }
+	      else {
+	         throw new IllegalArgumentException("잘못된 회원 유형입니다.");
+	      }
+	      
+	      // 회원 상태 조회
+	      MemberStatus memberStatus = memberStatusRepository.findById(statusId)
+	                     .orElseThrow(()-> new IllegalArgumentException("존재하지 않는 회원 상태입니다."));
+	      
+	      // 신고 상태 조회
+	      MemberReportStatus reportStatus = memberReportStatusRepository.findById(1L)
+	                  .orElseThrow(() -> new IllegalArgumentException("신고 상태가 존재하지 않습니다.") );
+	      
+	      // 회원 생성
+	      Member member = new Member();
+	      
+	      member.setLoginId(dto.getLoginId());
+	      member.setMobile(dto.getMobile());
+	      member.setNickname(dto.getNickname());
+	      member.setEmail(dto.getEmail());
+	      
+	      // 비밀번호 유출 여부 확인
+	      int leakCount = passwordLeakService.getLeakCount(dto.getPassword());
 
-		if (leakCount > 0) {
-		    throw new IllegalArgumentException(
-		        "사용하려는 비밀번호가 과거 데이터 유출에 포함된 적이 있습니다. 다른 비밀번호를 사용해주세요."
-		    );
-		}
+	      if (leakCount > 0) {
+	          throw new IllegalArgumentException(
+	              "사용하려는 비밀번호가 과거 데이터 유출에 포함된 적이 있습니다. 다른 비밀번호를 사용해주세요."
+	          );
+	      }
 
-		if (leakCount == -1) {
-		    throw new IllegalArgumentException(
-		        "비밀번호 보안 검증에 실패했습니다. 잠시 후 다시 시도해주세요."
-		    );
-		}
-		
-		// 비밀번호 암호화
-		member.setPassword(passwordEncoder.encode(dto.getPassword()));
-		
-		// 프로필 이미지(기본 or 설정 이미지)
-		if(dto.getProfileUrl() == null || dto.getProfileUrl().isBlank()) {
-			member.setProfileUrl("/images/moit.png");
-		}
-		else {
-			member.setProfileUrl(dto.getProfileUrl());
-		}
-		
-		member.setMemberType(memberType);
-		member.setMemberStatus(memberStatus);
-		
-		// 회원정보 저장
-		memberRepository.save(member);
-		
-		// 회원 상세정보
-		MemberInfo memberInfo = new MemberInfo();
-		
-		memberInfo.setMember(member);
-		memberInfo.setGender(dto.getGender());
-		memberInfo.setBirth(dto.getBirth());
-		memberInfo.setMemberReportStatus(reportStatus);
-		
-		memberInfoRepository.save(memberInfo);
-		
-		// 회원 관심사
-		if(dto.getInterestIds() != null) {
-			for(Integer interestId  : dto.getInterestIds()) {
-				Interest interest = interestRepository.findById(interestId.longValue())
-									.orElseThrow(()-> new IllegalArgumentException("존재하지 않은 관심사입니다."));
-				MemberInterest memberInterest = new MemberInterest();
-				
-				MemberInterestId id = new MemberInterestId(member.getId(),interest.getInterestId());
-				
-				memberInterest.setId(id);
-				memberInterest.setMember(member);
-				memberInterest.setInterest(interest);
-				
-				memberInterestRepository.save(memberInterest);
-			}
-		}
-		
-		// 휴대폰 인증 완료 상태 삭제
-		phoneVerificationService.removePhoneVerified(dto.getMobile());		
-		
-		// DTO에 반영
-		dto.setMemberId(member.getId());
-		dto.setStatusId(statusId);
-		dto.setProfileUrl(member.getProfileUrl());
-		
-		return dto;
-		
-	}
+	      if (leakCount == -1) {
+	          throw new IllegalArgumentException(
+	              "비밀번호 보안 검증에 실패했습니다. 잠시 후 다시 시도해주세요."
+	          );
+	      }
+	      
+	      // 비밀번호 암호화
+	      member.setPassword(passwordEncoder.encode(dto.getPassword()));
+	      
+	      // 프로필 이미지(기본 or 설정 이미지)
+	      if(dto.getProfileUrl() == null || dto.getProfileUrl().isBlank()) {
+	         member.setProfileUrl("/images/moit.png");
+	      }
+	      else {
+	         member.setProfileUrl(dto.getProfileUrl());
+	      }
+	      
+	      member.setMemberType(memberType);
+	      member.setMemberStatus(memberStatus);
+	      
+	      // 회원정보 저장
+	      memberRepository.save(member);
+	      
+	      // 회원 상세정보
+	      MemberInfo memberInfo = new MemberInfo();
+	      
+	      memberInfo.setMember(member);
+	      memberInfo.setGender(dto.getGender());
+	      memberInfo.setBirth(dto.getBirth());
+	      memberInfo.setMemberReportStatus(reportStatus);
+	      
+	      memberInfoRepository.save(memberInfo);
+	      
+	      // 회원 관심사
+	      if(dto.getInterestIds() != null) {
+	         for(Integer interestId  : dto.getInterestIds()) {
+	            Interest interest = interestRepository.findById(interestId.longValue())
+	                           .orElseThrow(()-> new IllegalArgumentException("존재하지 않은 관심사입니다."));
+	            MemberInterest memberInterest = new MemberInterest();
+	            
+	            MemberInterestId id = new MemberInterestId(member.getId(),interest.getInterestId());
+	            
+	            memberInterest.setId(id);
+	            memberInterest.setMember(member);
+	            memberInterest.setInterest(interest);
+	            
+	            memberInterestRepository.save(memberInterest);
+	         }
+	      }
+	      
+	      // 일반회원/제휴업체만 휴대폰 인증 완료 상태 삭제
+	      if (dto.getMemberTypeId() != 3L) {
+	          phoneVerificationService.removePhoneVerified(dto.getMobile());
+	      }      
+	      
+	      // DTO에 반영
+	      dto.setMemberId(member.getId());
+	      dto.setStatusId(statusId);
+	      dto.setProfileUrl(member.getProfileUrl());
+	      
+	      return dto;
+	      
+	   }
 	
 	// 로그인
 	@Override

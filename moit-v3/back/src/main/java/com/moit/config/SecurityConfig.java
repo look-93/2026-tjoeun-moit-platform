@@ -101,8 +101,10 @@ public class SecurityConfig {
             // -------------------------------------------------
             .requestMatchers(
                 "/api/members/signup",
+                "/api/admin/members/signup",
                 "/api/members/login",
                 "/api/members/check-loginId",
+                "/api/admin/members/signup", 
                 "/api/members/check-email",
                 "/api/members/check-nickname",
                 "/api/members/phone/send",

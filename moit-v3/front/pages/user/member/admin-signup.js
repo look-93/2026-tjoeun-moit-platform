@@ -324,11 +324,11 @@ function AdminSignup() {
             return;
         }
 
-        dispatch(
-            checkMobileRequest(
-                mobile.trim()
-            )
-        );
+        // dispatch(
+        //     checkMobileRequest(
+        //         mobile.trim()
+        //     )
+        // );
     };
 
 
@@ -453,14 +453,14 @@ function AdminSignup() {
 
 
         // 전화번호 중복확인
-        if (!duplicateCheck.mobile) {
+        // if (!duplicateCheck.mobile) {
 
-            message.error(
-                "전화번호 중복확인을 완료해주세요."
-            );
+        //     message.error(
+        //         "전화번호 중복확인을 완료해주세요."
+        //     );
 
-            return;
-        }
+        //     return;
+        // }
 
 
         // 비밀번호 유출검사
@@ -1146,14 +1146,14 @@ function AdminSignup() {
                                 }
                             />
 
-                            <Button
+                            {/* <Button
                                 type="primary"
                                 onClick={
                                     handleCheckMobile
                                 }
                             >
                                 중복확인
-                            </Button>
+                            </Button> */}
 
                         </Space.Compact>
 
