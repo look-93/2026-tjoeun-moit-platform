@@ -91,8 +91,6 @@ import lombok.extern.slf4j.Slf4j;
 @Transactional(readOnly = true)
 public class MeetupServiceImpl implements MeetupService{
 
-    private final ThymeleafConfig thymeleafConfig;
-	
     private static final String TRUST_SCORE_KEY_PREFIX = "trust:meetup-completed:";
 	private static final String BOOST_KEY_PREFIX = "meetup:boost:";
 	private static final int BOOST_POINT = 200; // 끌어올리기 비용

@@ -56,6 +56,7 @@ public class MeetupController {
 	private final MeetupService meetupService;
 	private final OpenApiService openApiService;
 	
+	//학습목적으로 파라미터를 직접 받는 방식 채택
 	@Operation(summary = "모임리스트조회", description = "모임리스트를 조회합니다.")
 	@GetMapping
 	public ResponseEntity<MeetupListResponseDto> search(
